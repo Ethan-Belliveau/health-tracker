@@ -200,8 +200,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .plan-w-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
 .pw-btn { padding: 8px 4px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 500; cursor: pointer; background: var(--bg); color: var(--text); font-family: inherit; text-align: center; }
 .pw-btn.sel { background: var(--green-bg); border-color: #8bc34a; color: var(--green); font-weight: 600; }
-.plan-detail-row { display: grid; grid-template-columns: 92px 1fr; gap: 8px; margin-bottom: 8px; }
+.plan-detail-row { display: grid; grid-template-columns: 104px 1fr; gap: 8px; margin-bottom: 8px; }
+.plan-distance-wrap { position: relative; }
 .plan-distance { width: 100%; border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; background: var(--bg); outline: none; color: var(--text); }
+.plan-distance { padding-right: 34px; }
+.plan-distance-unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 700; color: var(--subtle); pointer-events: none; }
 .plan-distance:focus { border-color: var(--blue-mid); background: #fff; }
 .plan-notes { width: 100%; border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; background: var(--bg); outline: none; resize: none; height: 46px; color: var(--text); }
 .plan-notes:focus { border-color: var(--blue-mid); background: #fff; }
@@ -891,6 +894,9 @@ function setBackupStatus(msg) { const el=document.getElementById('backupStatus')
 function appState() {
   return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), customMeals:getCustomMeals(), groceryChecked:getGroceryChecked(), updatedAt:backupMeta().updatedAt||null };
 }
+function backupPayload() {
+  return JSON.stringify({state:appState()});
+}
 function writeAppState(state) {
   restoringBackup = true;
   if(Array.isArray(state.log)) localStorage.setItem(STORAGE_KEY, JSON.stringify(state.log));
@@ -916,10 +922,10 @@ function queueBackup() {
   backupTimer=setTimeout(syncBackup, 700);
 }
 async function syncBackup() {
+  clearTimeout(backupTimer);
   try {
     setBackupStatus('Backing up...');
-    const state=appState();
-    const r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state})});
+    const r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:backupPayload(),cache:'no-store'});
     if(!r.ok) throw new Error('sync failed');
     const data=await r.json();
     localStorage.setItem(BACKUP_KEY, JSON.stringify({...backupMeta(), syncedAt:data.syncedAt||new Date().toISOString()}));
@@ -928,9 +934,18 @@ async function syncBackup() {
     setBackupStatus('Backup offline - saved on this device');
   }
 }
+function flushBackup() {
+  if(!hasLocalData()) return;
+  try {
+    const blob=new Blob([backupPayload()], {type:'application/json'});
+    if(navigator.sendBeacon && navigator.sendBeacon('/api/sync', blob)) return;
+  } catch {}
+  fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:backupPayload(),cache:'no-store',keepalive:true}).catch(()=>{});
+}
 async function restoreBackup() {
   try {
-    const r=await fetch('/api/load');
+    setBackupStatus('Checking backup...');
+    const r=await fetch('/api/load',{cache:'no-store'});
     if(!r.ok) throw new Error('load failed');
     const data=await r.json();
     const remote=data.state;
@@ -1257,7 +1272,7 @@ function saveCheckin() {
   setTimeout(()=>{btn.textContent='Save log';btn.classList.remove('saved');},1600);
   if(entry.date===today()) editingToday=false;
   selectedLogDate=today();
-  scheduleReminder(); render(); updateTodayCompleteState();
+  scheduleReminder(); render(); updateTodayCompleteState(); syncBackup();
 }
 
 function loadTodayEntry() { loadEntryForDate(today()); }
@@ -1353,7 +1368,7 @@ function saveMissedEntry(){
   ['missedDist','missedSleep','missedWeight','missedCalories','missedWater','missedAlcohol'].forEach(id=>document.getElementById(id).value='');
   missedWorkouts.clear(); missedRating=0; missedMood=0; renderMissedControls();
   toggleMissedEntryForm(false);
-  render(); renderChart();
+  render(); renderChart(); syncBackup();
   showToast('Missed day saved');
 }
 
@@ -1419,12 +1434,12 @@ function defaultWeekFocus(w){
 function defaultPlanDay(w, dayIndex){
   const phase=w<=4?1:w<=8?2:3;
   const templates={
-    1:[['walk',3.5,'Zone 2 walk. Keep it easy.'],['weights',2,'Full-body strength plus short walk.'],['walk',4,'Brisk walk. Finish with mobility.'],['none',0,'Recovery day. Prioritize sleep and calories.'],['weights',2,'Full-body strength plus short walk.'],['walk',4.5,'Longer easy walk.'],['walk',5,'Outdoor walk or light hike.']],
-    2:[['run',4,'Run/walk intervals. Keep effort controlled.'],['weights',2,'Strength session plus easy walk.'],['walk',5,'Zone 2 walk.'],['run',4.5,'Easy run or run/walk.'],['weights',2,'Strength session.'],['walk',5.5,'Long walk.'],['none',0,'Recovery and meal prep.']],
-    3:[['run',5,'Easy run. Build toward continuous 5K.'],['weights',2,'Strength maintenance.'],['walk',6,'Zone 2 walk.'],['run',5.5,'Run with short pickups if feeling good.'],['weights',2,'Strength maintenance plus mobility.'],['walk',7,'Long walk or hike.'],['none',0,'Recovery. Review the week.']]
+    1:[[ ['walk'],3.5,'Zone 2 walk. Keep it easy.'],[ ['walk','weights'],3,'Full-body strength plus short walk.'],[ ['walk'],4,'Brisk walk. Finish with mobility.'],[ [],2,'Recovery walk optional. Prioritize sleep and calories.'],[ ['walk','weights'],3,'Full-body strength plus short walk.'],[ ['walk'],4.5,'Longer easy walk.'],[ ['walk'],5.5,'Outdoor walk or light hike.']],
+    2:[[ ['run','walk'],4.5,'Run/walk intervals. Keep effort controlled.'],[ ['walk','weights'],3.5,'Strength session plus easy walk.'],[ ['walk'],5.5,'Zone 2 walk.'],[ ['run','walk'],5,'Easy run or run/walk.'],[ ['walk','weights'],3.5,'Strength session plus recovery walk.'],[ ['walk'],6.5,'Long walk.'],[ [],2,'Recovery walk optional and meal prep.']],
+    3:[[ ['run','walk'],5.5,'Easy run. Build toward continuous 5K.'],[ ['walk','weights'],4,'Strength maintenance plus easy walk.'],[ ['walk'],6.5,'Zone 2 walk.'],[ ['run','walk'],6,'Run with short pickups if feeling good.'],[ ['walk','weights'],4,'Strength maintenance plus mobility.'],[ ['walk'],7.5,'Long walk or hike.'],[ [],2,'Recovery walk optional. Review the week.']]
   };
-  const [workout,distance,note]=templates[phase][dayIndex];
-  return {workout,distance,note};
+  const [workouts,distance,note]=templates[phase][dayIndex];
+  return {workouts,workout:workouts[0]||'none',distance,note};
 }
 
 function renderPlan() {
@@ -1437,13 +1452,27 @@ function renderPlan() {
   const tod=today();
   document.getElementById('planDays').innerHTML=Array.from({length:7},(_,i)=>{
     const d=new Date(start); d.setDate(start.getDate()+i);
-    const dk=dstr(d), isT=dk===tod, dp={...defaultPlanDay(w,i), ...(plan.days[dk]||{})}, selW=dp.workout||'none';
-    const wBtns=['Rest','Walk','Run','Weights'].map((l,j)=>{ const v=['none','walk','run','weights'][j]; return '<button class="pw-btn'+(v===selW?' sel':'')+'" onclick="saveDayW(\''+dk+'\',\''+v+'\',this)">'+l+'</button>'; }).join('');
-    return '<div class="plan-day'+(isT?' is-today':'')+'"><div class="plan-day-hdr"><span class="plan-day-name">'+d.toLocaleDateString('en-US',{weekday:'short'})+'</span><span class="plan-day-date">'+fmtDate(dk)+'</span>'+(isT?'<span class="today-tag">Today</span>':'')+'</div><div class="plan-w-grid">'+wBtns+'</div><div class="plan-detail-row"><input class="plan-distance" type="number" min="0" max="30" step="0.5" inputmode="decimal" value="'+(dp.distance||0)+'" oninput="saveDayD(\''+dk+'\',this.value)" aria-label="Distance target"><textarea class="plan-notes" placeholder="Notes - meals, time, target" oninput="saveDayN(\''+dk+'\',this.value)">'+esc(dp.note||'')+'</textarea></div></div>';
+    const dk=dstr(d), isT=dk===tod, dp={...defaultPlanDay(w,i), ...(plan.days[dk]||{})};
+    const selWs=new Set(Array.isArray(dp.workouts)?dp.workouts:(dp.workout&&dp.workout!=='none'?[dp.workout]:[]));
+    const wBtns=['Rest','Walk','Run','Weights'].map((l,j)=>{ const v=['none','walk','run','weights'][j], sel=v==='none'?selWs.size===0:selWs.has(v); return '<button class="pw-btn'+(sel?' sel':'')+'" onclick="saveDayW(\''+dk+'\',\''+v+'\',this)">'+l+'</button>'; }).join('');
+    return '<div class="plan-day'+(isT?' is-today':'')+'"><div class="plan-day-hdr"><span class="plan-day-name">'+d.toLocaleDateString('en-US',{weekday:'short'})+'</span><span class="plan-day-date">'+fmtDate(dk)+'</span>'+(isT?'<span class="today-tag">Today</span>':'')+'</div><div class="plan-w-grid">'+wBtns+'</div><div class="plan-detail-row"><div class="plan-distance-wrap"><input class="plan-distance" type="number" min="0" max="30" step="0.5" inputmode="decimal" value="'+(dp.distance||0)+'" oninput="saveDayD(\''+dk+'\',this.value)" aria-label="Distance target in kilometers"><span class="plan-distance-unit">km</span></div><textarea class="plan-notes" placeholder="Notes - meals, time, target" oninput="saveDayN(\''+dk+'\',this.value)">'+esc(dp.note||'')+'</textarea></div></div>';
   }).join('');
 }
 function saveWeekFocus(){ const p=getPlan(); p.weekFocus[selectedPlanWeek]=document.getElementById('planFocus').value; savePlan(p); }
-function saveDayW(dk,v,el){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].workout=v; savePlan(p); el.closest('.plan-w-grid').querySelectorAll('.pw-btn').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
+function saveDayW(dk,v,el){
+  const p=getPlan(); if(!p.days[dk])p.days[dk]={};
+  const cur=new Set(Array.isArray(p.days[dk].workouts)?p.days[dk].workouts:(p.days[dk].workout&&p.days[dk].workout!=='none'?[p.days[dk].workout]:[]));
+  if(v==='none') cur.clear();
+  else cur.has(v) ? cur.delete(v) : cur.add(v);
+  p.days[dk].workouts=[...cur];
+  p.days[dk].workout=p.days[dk].workouts[0]||'none';
+  savePlan(p);
+  const grid=el.closest('.plan-w-grid');
+  grid.querySelectorAll('.pw-btn').forEach((b,idx)=>{
+    const bv=['none','walk','run','weights'][idx];
+    b.classList.toggle('sel', bv==='none'?cur.size===0:cur.has(bv));
+  });
+}
 function saveDayD(dk,v){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].distance=parseFloat(v)||0; savePlan(p); }
 function saveDayN(dk,v){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].note=v; savePlan(p); }
 function setMarker(id, pct, color) {
@@ -1552,6 +1581,8 @@ selectedPlanWeek=weekNum();
 setupDrag('starRow', 'data-r', setRating);
 setupDrag('moodRow', 'data-m', setMood);
 render(); renderMetrics(); renderMealPlanner(); loadTodayEntry(); checkBanner(); initPush(); scheduleReminder(); restoreBackup();
+window.addEventListener('pagehide', flushBackup);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushBackup(); });
 window.scrollTo({ top: 0, behavior: 'instant' });
 </script>
 </body>

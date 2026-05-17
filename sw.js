@@ -1,4 +1,4 @@
-const CACHE = 'health-tracker-v3';
+const CACHE = 'health-tracker-v4';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -14,6 +14,21 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  if (url.pathname.startsWith('/api/')) {
+    e.respondWith(fetch(e.request, { cache: 'no-store' }));
+    return;
+  }
+  if (e.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put('/index.html', copy));
+        return res;
+      }).catch(() => caches.match('/index.html').then(cached => cached || caches.match('/')))
+    );
+    return;
+  }
   e.respondWith(caches.match(e.request).then(cached => cached || fetch(e.request)));
 });
 

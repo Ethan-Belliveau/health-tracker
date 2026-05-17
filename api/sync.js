@@ -14,7 +14,8 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   try {
-    const incoming = req.body || {};
+    let incoming = req.body || {};
+    if (typeof incoming === 'string') incoming = JSON.parse(incoming);
     const state = incoming.state || { log: incoming.log };
     if (!state || !Array.isArray(state.log)) return res.status(400).json({ error: 'Invalid backup state' });
 
