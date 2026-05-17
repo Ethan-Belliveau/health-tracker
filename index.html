@@ -30,6 +30,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
 .week-pill { font-size: 11px; font-weight: 600; background: var(--green-bg); color: var(--green); padding: 4px 10px; border-radius: 20px; }
 .header-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.backup-status { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
 /* Nav */
 .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-top: 0.5px solid var(--border); display: flex; padding-bottom: var(--sab); z-index: 20; }
@@ -126,17 +127,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .meal-add-btn { width: 100%; padding: 10px; background: var(--text); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
 
 /* Goals */
-.goals-list { display: flex; flex-direction: column; gap: 8px; }
-.goal-row { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 14px; }
-.goal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.goal-name { font-size: 13px; font-weight: 500; }
-.goal-vals { display: flex; align-items: baseline; gap: 5px; }
-.goal-cur { font-size: 16px; font-weight: 600; }
-.goal-arrow { font-size: 11px; color: var(--subtle); }
-.goal-tgt { font-size: 14px; font-weight: 600; color: var(--green-mid); }
-.progress-bar { height: 5px; background: #ede9e2; border-radius: 3px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
-.goal-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
+.goals-list { display: flex; flex-direction: column; gap: 10px; }
+.goal-row { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; }
+.goal-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.goal-name { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding-top: 5px; }
+.goal-right { text-align: right; flex-shrink: 0; }
+.goal-cur { font-size: 26px; font-weight: 700; line-height: 1.1; }
+.goal-unit { font-size: 13px; font-weight: 500; color: var(--muted); margin-left: 2px; }
+.goal-tgt-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.zone-track { height: 12px; border-radius: 6px; position: relative; margin-bottom: 10px; }
+.zone-marker { position: absolute; top: 50%; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid #aaa; transform: translate(-50%,-50%); box-shadow: 0 1px 7px rgba(0,0,0,0.25); transition: left 0.5s ease, border-color 0.4s ease; z-index: 2; pointer-events: none; }
+.zone-target-line { position: absolute; top: -5px; bottom: -5px; width: 2px; background: rgba(255,255,255,0.75); transform: translateX(-50%); z-index: 1; border-radius: 1px; }
+.zone-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-weight: 500; }
+.goal-sub { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
 /* Manual metrics card */
 .metrics-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
@@ -206,6 +209,60 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .empty { text-align: center; padding: 28px 20px; color: var(--subtle); font-size: 13px; }
 .empty-icon { font-size: 32px; margin-bottom: 8px; }
 .cr { color: var(--red); } .ca { color: var(--amber); } .cg { color: var(--green-mid); }
+
+/* ── Meals tab ── */
+.meals-cart { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.cart-summary { font-size: 13px; font-weight: 600; color: var(--text); }
+.cart-items { margin-top: 8px; }
+.cart-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid #f2efe8; }
+.cart-item:last-of-type { border-bottom: none; }
+.cart-item-name { flex: 1; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cart-item-kcal { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+.cart-stepper { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.cart-stepper button { width: 26px; height: 26px; border-radius: 50%; border: 0.5px solid var(--border); background: var(--bg); color: var(--text); font-size: 15px; cursor: pointer; font-family: inherit; line-height: 1; }
+.cart-stepper span { font-size: 13px; font-weight: 600; min-width: 18px; text-align: center; }
+.cart-actions { display: flex; gap: 8px; margin-top: 12px; }
+.cart-grocery-btn { flex: 1; padding: 11px; background: var(--text); color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.cart-clear-btn { padding: 11px 14px; border: 0.5px solid var(--border); background: none; border-radius: 10px; font-size: 13px; color: var(--muted); cursor: pointer; font-family: inherit; }
+.meal-filter-bar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-bottom: 10px; }
+.meal-filter-bar::-webkit-scrollbar { display: none; }
+.meal-filter-btn { flex-shrink: 0; padding: 6px 14px; border: 0.5px solid var(--border); border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; background: var(--bg); color: var(--muted); font-family: inherit; }
+.meal-filter-btn.sel { background: var(--text); color: #fff; border-color: var(--text); }
+.meal-search { width: 100%; padding: 10px 12px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; background: var(--surface); outline: none; margin-bottom: 10px; color: var(--text); }
+.meal-search:focus { border-color: var(--blue-mid); }
+.meal-lib-cat { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 14px 0 6px; }
+.meal-lib-cat:first-child { margin-top: 0; }
+.meal-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; margin-bottom: 6px; overflow: hidden; }
+.meal-card-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; -webkit-user-select: none; user-select: none; }
+.meal-card-info { flex: 1; min-width: 0; }
+.meal-card-name { font-size: 14px; font-weight: 500; display: block; }
+.meal-card-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.meal-card .meal-add-btn { width: auto; flex-shrink: 0; min-width: 40px; height: 36px; border-radius: 10px; border: none; background: var(--green-bg); color: var(--green); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 0 10px; }
+.meal-card .meal-add-btn.in-cart { background: var(--green); color: #fff; }
+.meal-card-body { padding: 0 14px 12px; border-top: 0.5px solid #f2efe8; }
+.meal-ing-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 10px 0 6px; }
+.meal-ing-grid { display: flex; flex-direction: column; gap: 4px; }
+.meal-ing-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; border-bottom: 0.5px solid #f5f3ee; }
+.meal-ing-row:last-child { border-bottom: none; }
+.meal-ing-name { color: var(--text); }
+.meal-ing-amt { color: var(--muted); font-weight: 500; }
+.meal-recipe { margin: 8px 0 0 18px; color: #444; font-size: 12px; line-height: 1.45; }
+.meal-recipe li { margin-bottom: 4px; }
+.grocery-wrap { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; display: none; }
+.grocery-wrap.show { display: block; }
+.grocery-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.grocery-ttl { font-size: 14px; font-weight: 600; }
+.grocery-copy-btn { font-size: 12px; font-weight: 600; color: var(--blue-mid); border: none; background: none; cursor: pointer; font-family: inherit; }
+.grocery-item { display: flex; align-items: baseline; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid #f2efe8; }
+.grocery-item:last-child { border-bottom: none; }
+.grocery-item input[type=checkbox] { flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; accent-color: var(--green-mid); }
+.grocery-item.done .gi-name, .grocery-item.done .gi-amt { text-decoration: line-through; color: var(--subtle); }
+.gi-name { flex: 1; font-size: 13px; }
+.gi-amt { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+
+/* 5-tab nav */
+.nav-btn { padding: 8px 2px 6px; }
+.nav-btn svg { width: 20px; height: 20px; }
 </style>
 </head>
 <body>
@@ -217,6 +274,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       <span class="week-pill" id="weekBadge">Week 1 of 12</span>
     </div>
     <div class="header-date" id="headerDate"></div>
+    <div class="backup-status" id="backupStatus">Backup waiting...</div>
   </div>
 
   <!-- ═══ TODAY ═══ -->
@@ -302,7 +360,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       <!-- Water + Alcohol -->
       <div class="stepper-row">
         <div class="stepper-block">
-          <label>💧 Water</label>
+          <label>Water</label>
           <div class="stepper">
             <button class="step-btn" onclick="adj('water',-1)">−</button>
             <div class="step-val" id="f-water">0</div>
@@ -311,7 +369,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <div class="step-unit">liters</div>
         </div>
         <div class="stepper-block">
-          <label>🍺 Alcohol</label>
+          <label>Alcohol</label>
           <div class="stepper">
             <button class="step-btn" onclick="adj('alcohol',-1)">−</button>
             <div class="step-val" id="f-alcohol">0</div>
@@ -325,7 +383,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       <div class="food-header">
         <span class="food-title">Food today</span>
         <span class="food-total" id="foodTotal"></span>
-        <button class="add-meal-btn" onclick="toggleMealForm()">+ Add meal</button>
+        <button class="add-meal-btn" id="addMealToggleBtn" onclick="toggleMealForm()">+ Add meal</button>
       </div>
       <div id="mealList"></div>
       <div class="meal-form" id="mealForm">
@@ -361,7 +419,33 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
     </div>
   </div>
 
-  <!-- ═══ GOALS ═══ -->
+  <!-- MEALS -->
+  <div class="page" id="page-meals">
+    <div style="margin-top:16px;">
+      <div class="meals-cart">
+        <div class="cart-summary" id="mealCartSummary">No meals selected</div>
+        <div class="cart-items" id="mealCartItems"></div>
+        <div class="cart-actions">
+          <button class="cart-grocery-btn" onclick="renderGroceryList(true)">Build grocery list</button>
+          <button class="cart-clear-btn" onclick="clearMealCart()">Clear</button>
+        </div>
+      </div>
+
+      <div class="grocery-wrap" id="groceryWrap">
+        <div class="grocery-head">
+          <div class="grocery-ttl">Grocery list</div>
+          <button class="grocery-copy-btn" onclick="copyGroceryList()">Copy</button>
+        </div>
+        <div id="groceryList"></div>
+      </div>
+
+      <div class="meal-filter-bar" id="mealFilters"></div>
+      <input class="meal-search" id="mealSearch" placeholder="Search meals or ingredients" oninput="renderMealLibrary()">
+      <div id="mealLibrary"></div>
+    </div>
+  </div>
+
+  <!-- GOALS -->
   <div class="page" id="page-goals">
     <div class="slabel" style="margin-top:16px;">Apple Watch metrics</div>
     <div class="metrics-card">
@@ -411,41 +495,130 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 
     <div class="slabel">12-week targets</div>
     <div class="goals-list">
+
+      <!-- Weight -->
       <div class="goal-row">
-        <div class="goal-top"><span class="goal-name">Weight</span><div class="goal-vals"><span class="goal-cur cr" id="g-weight-cur">175</span><span class="goal-arrow">→</span><span class="goal-tgt">165 lbs</span></div></div>
-        <div class="progress-bar"><div class="progress-fill" id="pb-weight" style="background:#EF9F27;width:0%"></div></div>
+        <div class="goal-top">
+          <span class="goal-name">Weight</span>
+          <div class="goal-right">
+            <div><span class="goal-cur cr" id="g-weight-cur">175.0</span><span class="goal-unit">lbs</span></div>
+            <div class="goal-tgt-label">target · 165 lbs</div>
+          </div>
+        </div>
+        <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 38%,#8bc34a 68%,#3b8c10 100%)">
+          <div class="zone-marker" id="zm-weight"></div>
+        </div>
+        <div class="zone-labels"><span>175 lbs</span><span>170</span><span>165 ✓</span></div>
         <div class="goal-sub" id="gs-weight">10 lbs to go · 0.83 lbs/week pace</div>
       </div>
+
+      <!-- Body fat -->
       <div class="goal-row">
-        <div class="goal-top"><span class="goal-name">Body fat</span><div class="goal-vals"><span class="goal-cur cr">~20%</span><span class="goal-arrow">→</span><span class="goal-tgt">~15%</span></div></div>
-        <div class="progress-bar"><div class="progress-fill" style="background:#D85A30;width:0%"></div></div>
-        <div class="goal-sub">Estimated — measure monthly with tape or calipers</div>
+        <div class="goal-top">
+          <span class="goal-name">Body fat</span>
+          <div class="goal-right">
+            <div><span class="goal-cur ca">~20</span><span class="goal-unit">%</span></div>
+            <div class="goal-tgt-label">target · ~15%</div>
+          </div>
+        </div>
+        <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 33%,#8bc34a 67%,#3b8c10 93%)">
+          <!-- Static marker at ~33% for 20% BF on a 25→10% scale -->
+          <div class="zone-marker" style="left:33%;border-color:#EF9F27"></div>
+          <div class="zone-target-line" style="left:67%"></div>
+        </div>
+        <div class="zone-labels"><span>25% (high)</span><span>20%</span><span>15% ✓</span><span>10%</span></div>
+        <div class="goal-sub">Measure monthly — tape, calipers, or DEXA</div>
       </div>
+
+      <!-- VO2 Max -->
       <div class="goal-row">
-        <div class="goal-top"><span class="goal-name">VO2 Max</span><div class="goal-vals"><span class="goal-cur cr" id="g-vo2-cur">36.2</span><span class="goal-arrow">→</span><span class="goal-tgt">41+</span></div></div>
-        <div class="progress-bar"><div class="progress-fill" id="pb-vo2" style="background:#378ADD;width:48%"></div></div>
-        <div class="goal-sub" id="gs-vo2">Tap Edit above to update from the Health app</div>
+        <div class="goal-top">
+          <span class="goal-name">VO2 Max</span>
+          <div class="goal-right">
+            <div><span class="goal-cur cr" id="g-vo2-cur">—</span><span class="goal-unit">ml/kg/min</span></div>
+            <div class="goal-tgt-label">target · 41+</div>
+          </div>
+        </div>
+        <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 30%,#8bc34a 63%,#3b8c10 90%)">
+          <div class="zone-marker" id="zm-vo2"></div>
+          <div class="zone-target-line" style="left:55%"></div>
+        </div>
+        <div class="zone-labels"><span>30 (poor)</span><span>35</span><span>41 ✓</span><span>50+</span></div>
+        <div class="goal-sub" id="gs-vo2">Tap Edit above to update from Health app</div>
       </div>
+
+      <!-- Resting HR -->
       <div class="goal-row">
-        <div class="goal-top"><span class="goal-name">Resting HR</span><div class="goal-vals"><span class="goal-cur ca" id="g-rhr-cur">78 bpm</span><span class="goal-arrow">→</span><span class="goal-tgt">&lt;68</span></div></div>
-        <div class="progress-bar"><div class="progress-fill" id="pb-rhr" style="background:#D85A30;width:55%"></div></div>
+        <div class="goal-top">
+          <span class="goal-name">Resting HR</span>
+          <div class="goal-right">
+            <div><span class="goal-cur ca" id="g-rhr-cur">—</span><span class="goal-unit">bpm</span></div>
+            <div class="goal-tgt-label">target · &lt;68 bpm</div>
+          </div>
+        </div>
+        <!-- Scale 90→55 (lower = right = better) -->
+        <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 29%,#8bc34a 57%,#3b8c10 86%)">
+          <div class="zone-marker" id="zm-rhr"></div>
+          <div class="zone-target-line" style="left:63%"></div>
+        </div>
+        <div class="zone-labels"><span>90 (high)</span><span>80</span><span>68 ✓</span><span>55</span></div>
         <div class="goal-sub">Drops with consistent cardio over 6–8 weeks</div>
       </div>
+
+      <!-- HRV -->
       <div class="goal-row">
-        <div class="goal-top"><span class="goal-name">HRV</span><div class="goal-vals"><span class="goal-cur cr" id="g-hrv-cur">34 ms</span><span class="goal-arrow">→</span><span class="goal-tgt">48+ ms</span></div></div>
-        <div class="progress-bar"><div class="progress-fill" id="pb-hrv" style="background:#7F77DD;width:43%"></div></div>
-        <div class="goal-sub">Sleep quality is the fastest lever</div>
+        <div class="goal-top">
+          <span class="goal-name">HRV</span>
+          <div class="goal-right">
+            <div><span class="goal-cur cr" id="g-hrv-cur">—</span><span class="goal-unit">ms</span></div>
+            <div class="goal-tgt-label">target · 48+ ms</div>
+          </div>
+        </div>
+        <!-- Scale 20→60 -->
+        <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 25%,#8bc34a 60%,#3b8c10 90%)">
+          <div class="zone-marker" id="zm-hrv"></div>
+          <div class="zone-target-line" style="left:70%"></div>
+        </div>
+        <div class="zone-labels"><span>20 (low)</span><span>30</span><span>48 ✓</span><span>60+</span></div>
+        <div class="goal-sub">Sleep quality &amp; low stress are the fastest levers</div>
       </div>
+
+      <!-- Daily distance -->
       <div class="goal-row">
-        <div class="goal-top"><span class="goal-name">Daily distance</span><div class="goal-vals"><span class="goal-cur ca" id="g-dist-cur">3.5 km</span><span class="goal-arrow">→</span><span class="goal-tgt">6 km avg</span></div></div>
-        <div class="progress-bar"><div class="progress-fill" id="pb-dist" style="background:#378ADD;width:40%"></div></div>
-        <div class="goal-sub">Average over all days, not just active ones</div>
+        <div class="goal-top">
+          <span class="goal-name">Daily distance</span>
+          <div class="goal-right">
+            <div><span class="goal-cur ca" id="g-dist-cur">3.5</span><span class="goal-unit">km avg</span></div>
+            <div class="goal-tgt-label">target · 6 km/day</div>
+          </div>
+        </div>
+        <!-- Scale 0→8 km -->
+        <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 37%,#8bc34a 63%,#3b8c10 88%)">
+          <div class="zone-marker" id="zm-dist"></div>
+          <div class="zone-target-line" style="left:75%"></div>
+        </div>
+        <div class="zone-labels"><span>0</span><span>3 km</span><span>6 ✓</span><span>8 km</span></div>
+        <div class="goal-sub">7-day rolling average across all days</div>
       </div>
+
+      <!-- Sleep -->
       <div class="goal-row">
-        <div class="goal-top"><span class="goal-name">Sleep</span><div class="goal-vals"><span class="goal-cur cr" id="g-sleep-cur">6.5 hrs</span><span class="goal-arrow">→</span><span class="goal-tgt">7.5 hrs</span></div></div>
-        <div class="progress-bar"><div class="progress-fill" id="pb-sleep" style="background:#7F77DD;width:35%"></div></div>
-        <div class="goal-sub" id="gs-sleep">Go to bed earlier — this unlocks HRV improvement</div>
+        <div class="goal-top">
+          <span class="goal-name">Sleep</span>
+          <div class="goal-right">
+            <div><span class="goal-cur cr" id="g-sleep-cur">6.5</span><span class="goal-unit">hrs</span></div>
+            <div class="goal-tgt-label">target · 7.5 hrs</div>
+          </div>
+        </div>
+        <!-- Scale 4.5→9.5 hrs -->
+        <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 30%,#8bc34a 60%,#3b8c10 85%)">
+          <div class="zone-marker" id="zm-sleep"></div>
+          <div class="zone-target-line" style="left:60%"></div>
+        </div>
+        <div class="zone-labels"><span>4.5h (poor)</span><span>6h</span><span>7.5 ✓</span><span>9.5h</span></div>
+        <div class="goal-sub" id="gs-sleep">Earlier bedtime = better HRV &amp; recovery</div>
       </div>
+
     </div>
 
     <div class="slabel" style="margin-top:24px;">Milestones</div>
@@ -488,6 +661,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Plan
   </button>
+  <button class="nav-btn" onclick="showPage('meals',this)">
+    <svg viewBox="0 0 24 24"><path d="M4 3v8a4 4 0 008 0V3"/><path d="M8 3v18"/><path d="M19 3v18"/><path d="M15 3h4a1 1 0 011 1v7a4 4 0 01-4 4h-1"/></svg>
+    Meals
+  </button>
   <button class="nav-btn" onclick="showPage('goals',this)">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
     Goals
@@ -505,6 +682,9 @@ const OLD_KEY      = 'ethan_v2';
 const PLAN_KEY     = 'ethan_plan';
 const METRICS_KEY  = 'ethan_metrics';
 const NOTIF_KEY    = 'ethan_notif';
+const CART_KEY     = 'ethan_meal_cart';
+const GROCERY_KEY  = 'ethan_grocery_checked';
+const BACKUP_KEY   = 'ethan_backup_meta';
 const START        = new Date('2026-05-17'); // Sunday
 const TOTAL_WEEKS  = 12;
 const MOOD_EMOJI   = ['','😞','😐','🙂','😊','🤩'];
@@ -519,6 +699,10 @@ let currentMeals   = [];
 let mealKcal = null, mealQ = null;
 let distChart = null;
 let selectedPlanWeek = 1;
+let selectedMealFilter = 'All';
+let expandedMealId = null;
+let backupTimer = null;
+let restoringBackup = false;
 
 /* ══ Storage (with v2→v3 migration) ══ */
 function getLog() {
@@ -537,11 +721,77 @@ function getLog() {
   } catch {}
   return [];
 }
-function saveLog(l) { localStorage.setItem(STORAGE_KEY, JSON.stringify(l)); }
+function saveLog(l) { localStorage.setItem(STORAGE_KEY, JSON.stringify(l)); markLocalChange(); }
 function getPlan() { try { return JSON.parse(localStorage.getItem(PLAN_KEY)||'{"weekFocus":{},"days":{}}'); } catch { return {weekFocus:{},days:{}}; } }
-function savePlan(p) { localStorage.setItem(PLAN_KEY, JSON.stringify(p)); }
+function savePlan(p) { localStorage.setItem(PLAN_KEY, JSON.stringify(p)); markLocalChange(); }
 function getMetrics() { try { return JSON.parse(localStorage.getItem(METRICS_KEY)||'{}'); } catch { return {}; } }
-function setMetrics(m) { localStorage.setItem(METRICS_KEY, JSON.stringify(m)); }
+function setMetrics(m) { localStorage.setItem(METRICS_KEY, JSON.stringify(m)); markLocalChange(); }
+function getMealCart() { try { return JSON.parse(localStorage.getItem(CART_KEY)||'{}'); } catch { return {}; } }
+function setMealCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); markLocalChange(); }
+function getGroceryChecked() { try { return JSON.parse(localStorage.getItem(GROCERY_KEY)||'[]'); } catch { return []; } }
+function setGroceryChecked(v) { localStorage.setItem(GROCERY_KEY, JSON.stringify(v)); markLocalChange(); }
+function backupMeta() { try { return JSON.parse(localStorage.getItem(BACKUP_KEY)||'{}'); } catch { return {}; } }
+function setBackupStatus(msg) { const el=document.getElementById('backupStatus'); if(el) el.textContent=msg; }
+function appState() {
+  return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), groceryChecked:getGroceryChecked(), updatedAt:backupMeta().updatedAt||null };
+}
+function writeAppState(state) {
+  restoringBackup = true;
+  if(Array.isArray(state.log)) localStorage.setItem(STORAGE_KEY, JSON.stringify(state.log));
+  if(state.plan) localStorage.setItem(PLAN_KEY, JSON.stringify(state.plan));
+  if(state.metrics) localStorage.setItem(METRICS_KEY, JSON.stringify(state.metrics));
+  if(state.mealCart) localStorage.setItem(CART_KEY, JSON.stringify(state.mealCart));
+  if(Array.isArray(state.groceryChecked)) localStorage.setItem(GROCERY_KEY, JSON.stringify(state.groceryChecked));
+  localStorage.setItem(BACKUP_KEY, JSON.stringify({updatedAt:state.updatedAt||new Date().toISOString(), syncedAt:state.updatedAt||null}));
+  restoringBackup = false;
+}
+function hasLocalData() {
+  const s=appState();
+  return s.log.length || Object.keys(s.plan.weekFocus||{}).length || Object.keys(s.plan.days||{}).length || Object.keys(s.metrics||{}).length || Object.keys(s.mealCart||{}).length;
+}
+function markLocalChange() {
+  if(restoringBackup) return;
+  localStorage.setItem(BACKUP_KEY, JSON.stringify({...backupMeta(), updatedAt:new Date().toISOString()}));
+  queueBackup();
+}
+function queueBackup() {
+  clearTimeout(backupTimer);
+  backupTimer=setTimeout(syncBackup, 700);
+}
+async function syncBackup() {
+  try {
+    setBackupStatus('Backing up...');
+    const state=appState();
+    const r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state})});
+    if(!r.ok) throw new Error('sync failed');
+    const data=await r.json();
+    localStorage.setItem(BACKUP_KEY, JSON.stringify({...backupMeta(), syncedAt:data.syncedAt||new Date().toISOString()}));
+    setBackupStatus('Backed up');
+  } catch {
+    setBackupStatus('Backup offline - saved on this device');
+  }
+}
+async function restoreBackup() {
+  try {
+    const r=await fetch('/api/load');
+    if(!r.ok) throw new Error('load failed');
+    const data=await r.json();
+    const remote=data.state;
+    if(!remote) { setBackupStatus(hasLocalData()?'Backup ready':'No cloud backup yet'); return; }
+    const localUpdated=backupMeta().updatedAt ? new Date(backupMeta().updatedAt).getTime() : 0;
+    const remoteUpdated=remote.updatedAt ? new Date(remote.updatedAt).getTime() : (data.syncedAt ? new Date(data.syncedAt).getTime() : 0);
+    if(!hasLocalData() || remoteUpdated > localUpdated) {
+      writeAppState({...remote, updatedAt:remote.updatedAt||data.syncedAt||new Date().toISOString()});
+      render(); renderMetrics(); renderMealPlanner(); loadTodayEntry();
+      setBackupStatus('Restored from backup');
+    } else {
+      setBackupStatus('Backed up');
+      queueBackup();
+    }
+  } catch {
+    setBackupStatus('Backup offline - saved on this device');
+  }
+}
 
 function today()  { return new Date().toISOString().slice(0,10); }
 function weekNum(){ return Math.max(1,Math.min(TOTAL_WEEKS,Math.floor((Date.now()-START.getTime())/6048e5)+1)); }
@@ -613,6 +863,7 @@ function showPage(name,btn) {
   if(name==='history') renderChart();
   if(name==='goals')   renderMetrics();
   if(name==='plan')    renderPlan();
+  if(name==='meals')   renderMealPlanner();
 }
 
 /* ══ Workout multi-select ══ */
@@ -681,18 +932,30 @@ function adj(f,d) {
 }
 
 /* ══ Food log ══ */
+const MEAL_DEFAULTS = ['Breakfast','Lunch','Dinner','Snack'];
+function openMealForm() {
+  const f=document.getElementById('mealForm'); f.classList.add('show');
+  mealKcal=null; mealQ=null;
+  document.getElementById('mealName').value = MEAL_DEFAULTS[Math.min(currentMeals.length, 3)];
+  document.querySelectorAll('.chip,.q-chip').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('addMealToggleBtn').textContent = 'Done';
+  document.getElementById('mealName').focus();
+}
+function closeMealForm() {
+  document.getElementById('mealForm').classList.remove('show');
+  document.getElementById('addMealToggleBtn').textContent = '+ Add meal';
+}
 function toggleMealForm() {
-  const f=document.getElementById('mealForm'); f.classList.toggle('show');
-  if(f.classList.contains('show')){ mealKcal=null;mealQ=null; document.getElementById('mealName').value=''; document.querySelectorAll('.chip,.q-chip').forEach(c=>c.classList.remove('sel')); document.getElementById('mealName').focus(); }
+  document.getElementById('mealForm').classList.contains('show') ? closeMealForm() : openMealForm();
 }
 function selKcal(el){ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealKcal=+el.dataset.kcal; }
 function selQ(el)   { document.querySelectorAll('.q-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealQ=el.dataset.q; }
 function addMeal() {
   if(!mealKcal){ showToast('Pick a calorie amount'); return; }
   if(!mealQ)   { showToast('Pick a quality'); return; }
-  currentMeals.push({name:document.getElementById('mealName').value.trim()||('Meal '+(currentMeals.length+1)),kcal:mealKcal,quality:mealQ});
-  document.getElementById('mealForm').classList.remove('show');
+  currentMeals.push({name:document.getElementById('mealName').value.trim()||(MEAL_DEFAULTS[Math.min(currentMeals.length,3)]),kcal:mealKcal,quality:mealQ});
   renderMeals();
+  openMealForm(); // reset and stay open for next meal
 }
 function removeMeal(i){ currentMeals.splice(i,1); renderMeals(); }
 function renderMeals(list) {
@@ -700,6 +963,135 @@ function renderMeals(list) {
   if(!m.length){ el.innerHTML=''; document.getElementById('foodTotal').textContent=''; return; }
   document.getElementById('foodTotal').textContent='~'+m.reduce((s,x)=>s+x.kcal,0).toLocaleString()+' kcal';
   el.innerHTML=m.map((x,i)=>`<div class="meal-item"><span class="meal-name">${esc(x.name)}</span><span class="meal-kcal">~${x.kcal}</span><span class="meal-q q-${x.quality.toLowerCase()}">${x.quality}</span>${list===undefined?`<button class="meal-del" onclick="removeMeal(${i})">×</button>`:''}</div>`).join('');
+}
+
+/* Meal planner */
+const MEAL_LIBRARY = [
+  {id:'egg-avocado-toast',cat:'Breakfast',name:'Egg avocado toast',kcal:430,time:'10 min',ingredients:[i('eggs',2,'piece'),i('whole grain bread',2,'slice'),i('avocado',0.5,'piece'),i('spinach',1,'cup'),i('lemon juice',1,'tsp')],recipe:['Toast bread while eggs cook sunny-side or scrambled.','Mash avocado with lemon juice and a pinch of salt.','Layer avocado, spinach, and eggs on toast.']},
+  {id:'greek-yogurt-bowl',cat:'Breakfast',name:'Greek yogurt berry bowl',kcal:390,time:'5 min',ingredients:[i('Greek yogurt',1,'cup'),i('berries',1,'cup'),i('granola',0.33,'cup'),i('chia seeds',1,'tbsp'),i('honey',1,'tsp')],recipe:['Spoon yogurt into a bowl.','Top with berries, granola, chia, and honey.']},
+  {id:'protein-oats',cat:'Breakfast',name:'Protein banana oats',kcal:520,time:'8 min',ingredients:[i('rolled oats',0.5,'cup'),i('milk',1,'cup'),i('banana',1,'piece'),i('protein powder',1,'scoop'),i('peanut butter',1,'tbsp')],recipe:['Cook oats with milk.','Stir in protein powder off heat.','Top with sliced banana and peanut butter.']},
+  {id:'cottage-cheese-plate',cat:'Breakfast',name:'Cottage cheese fruit plate',kcal:360,time:'5 min',ingredients:[i('cottage cheese',1,'cup'),i('pineapple',1,'cup'),i('walnuts',2,'tbsp'),i('cinnamon',0.25,'tsp')],recipe:['Add cottage cheese and fruit to a bowl.','Top with walnuts and cinnamon.']},
+  {id:'turkey-breakfast-wrap',cat:'Breakfast',name:'Turkey egg breakfast wrap',kcal:470,time:'12 min',ingredients:[i('whole wheat tortilla',1,'piece'),i('eggs',2,'piece'),i('turkey slices',3,'slice'),i('cheddar',1,'oz'),i('salsa',2,'tbsp')],recipe:['Scramble eggs.','Warm tortilla with turkey and cheddar.','Add eggs and salsa, then roll tightly.']},
+  {id:'chicken-rice-bowl',cat:'Lunch',name:'Chicken rice power bowl',kcal:620,time:'25 min',ingredients:[i('chicken breast',6,'oz'),i('brown rice',0.75,'cup'),i('broccoli',1,'cup'),i('carrots',0.5,'cup'),i('teriyaki sauce',2,'tbsp')],recipe:['Cook chicken in a skillet until done.','Steam broccoli and carrots.','Serve over rice with teriyaki sauce.']},
+  {id:'tuna-white-bean-salad',cat:'Lunch',name:'Tuna white bean salad',kcal:470,time:'10 min',ingredients:[i('canned tuna',1,'can'),i('white beans',0.75,'cup'),i('mixed greens',2,'cup'),i('cherry tomatoes',0.5,'cup'),i('olive oil',1,'tbsp'),i('lemon juice',1,'tbsp')],recipe:['Drain tuna and beans.','Toss with greens, tomatoes, olive oil, and lemon.']},
+  {id:'turkey-chili',cat:'Lunch',name:'Turkey chili bowl',kcal:540,time:'35 min',ingredients:[i('ground turkey',6,'oz'),i('kidney beans',0.75,'cup'),i('crushed tomatoes',1,'cup'),i('onion',0.5,'piece'),i('chili powder',2,'tsp')],recipe:['Brown turkey with onion.','Add beans, tomatoes, chili powder, and simmer.','Serve as a bowl or over rice.']},
+  {id:'chickpea-wrap',cat:'Lunch',name:'Chickpea feta wrap',kcal:520,time:'10 min',ingredients:[i('whole wheat tortilla',1,'piece'),i('chickpeas',0.75,'cup'),i('feta',1,'oz'),i('cucumber',0.5,'cup'),i('mixed greens',1,'cup'),i('tzatziki',2,'tbsp')],recipe:['Mash chickpeas lightly with tzatziki.','Add to tortilla with feta, cucumber, and greens.','Roll and slice.']},
+  {id:'salmon-quinoa-salad',cat:'Lunch',name:'Salmon quinoa salad',kcal:610,time:'18 min',ingredients:[i('salmon fillet',5,'oz'),i('quinoa',0.75,'cup'),i('arugula',2,'cup'),i('cucumber',0.5,'cup'),i('olive oil',1,'tbsp'),i('lemon juice',1,'tbsp')],recipe:['Pan-sear salmon.','Toss quinoa, arugula, cucumber, olive oil, and lemon.','Flake salmon on top.']},
+  {id:'steak-sweet-potato',cat:'Dinner',name:'Lean steak sweet potato plate',kcal:690,time:'30 min',ingredients:[i('sirloin steak',6,'oz'),i('sweet potato',1,'piece'),i('green beans',1.5,'cup'),i('olive oil',1,'tbsp'),i('garlic',1,'clove')],recipe:['Roast or microwave sweet potato.','Sear steak to preference and rest.','Saute green beans with olive oil and garlic.']},
+  {id:'shrimp-tacos',cat:'Dinner',name:'Shrimp cabbage tacos',kcal:560,time:'20 min',ingredients:[i('shrimp',6,'oz'),i('corn tortillas',3,'piece'),i('cabbage slaw',1.5,'cup'),i('avocado',0.5,'piece'),i('Greek yogurt',2,'tbsp'),i('lime juice',1,'tbsp')],recipe:['Cook shrimp with taco seasoning.','Mix yogurt and lime for sauce.','Fill tortillas with shrimp, slaw, avocado, and sauce.']},
+  {id:'turkey-meatballs',cat:'Dinner',name:'Turkey meatballs with pasta',kcal:650,time:'35 min',ingredients:[i('ground turkey',6,'oz'),i('whole wheat pasta',2,'oz'),i('marinara',0.75,'cup'),i('zucchini',1,'cup'),i('parmesan',1,'tbsp')],recipe:['Shape turkey into meatballs and bake or pan-sear.','Cook pasta and warm marinara.','Serve with sauteed zucchini and parmesan.']},
+  {id:'tofu-stir-fry',cat:'Dinner',name:'Tofu vegetable stir-fry',kcal:580,time:'25 min',ingredients:[i('extra firm tofu',6,'oz'),i('brown rice',0.75,'cup'),i('stir fry vegetables',2,'cup'),i('soy sauce',1,'tbsp'),i('sesame oil',1,'tsp')],recipe:['Press and cube tofu.','Brown tofu in sesame oil.','Add vegetables and soy sauce, then serve over rice.']},
+  {id:'chicken-fajita-bowl',cat:'Dinner',name:'Chicken fajita bowl',kcal:630,time:'25 min',ingredients:[i('chicken breast',6,'oz'),i('brown rice',0.75,'cup'),i('bell peppers',1,'cup'),i('onion',0.5,'piece'),i('black beans',0.5,'cup'),i('salsa',2,'tbsp')],recipe:['Cook chicken with fajita seasoning.','Saute peppers and onion.','Serve over rice with beans and salsa.']},
+  {id:'lentil-soup',cat:'Dinner',name:'Lentil vegetable soup',kcal:480,time:'40 min',ingredients:[i('lentils',0.75,'cup'),i('vegetable broth',2,'cup'),i('carrots',0.5,'cup'),i('celery',0.5,'cup'),i('onion',0.5,'piece'),i('spinach',1,'cup')],recipe:['Simmer lentils, broth, carrots, celery, and onion.','Stir in spinach near the end.','Season with pepper and lemon.']},
+  {id:'cod-potatoes',cat:'Dinner',name:'Cod potatoes and asparagus',kcal:560,time:'30 min',ingredients:[i('cod fillet',6,'oz'),i('baby potatoes',6,'oz'),i('asparagus',1.5,'cup'),i('olive oil',1,'tbsp'),i('lemon juice',1,'tbsp')],recipe:['Roast potatoes until tender.','Bake cod and asparagus with olive oil and lemon.','Serve together.']},
+  {id:'beef-burrito-bowl',cat:'Dinner',name:'Beef burrito bowl',kcal:720,time:'25 min',ingredients:[i('lean ground beef',6,'oz'),i('brown rice',0.75,'cup'),i('black beans',0.5,'cup'),i('corn',0.5,'cup'),i('salsa',3,'tbsp'),i('romaine',1,'cup')],recipe:['Brown beef with taco spices.','Layer rice, beans, corn, romaine, and beef.','Top with salsa.']},
+  {id:'smoothie',cat:'Snack',name:'Protein berry smoothie',kcal:330,time:'5 min',ingredients:[i('protein powder',1,'scoop'),i('berries',1,'cup'),i('banana',0.5,'piece'),i('milk',1,'cup'),i('spinach',1,'cup')],recipe:['Blend all ingredients until smooth.','Add ice or water to thin if needed.']},
+  {id:'apple-peanut-butter',cat:'Snack',name:'Apple peanut butter',kcal:280,time:'3 min',ingredients:[i('apple',1,'piece'),i('peanut butter',2,'tbsp')],recipe:['Slice apple.','Serve with peanut butter for dipping.']},
+  {id:'hummus-veg',cat:'Snack',name:'Hummus veggie plate',kcal:260,time:'5 min',ingredients:[i('hummus',0.33,'cup'),i('carrots',1,'cup'),i('cucumber',1,'cup'),i('bell peppers',1,'cup')],recipe:['Slice vegetables.','Serve with hummus.']},
+  {id:'egg-snack-box',cat:'Snack',name:'Boiled egg snack box',kcal:310,time:'12 min',ingredients:[i('eggs',2,'piece'),i('grapes',1,'cup'),i('almonds',1,'oz'),i('carrots',0.5,'cup')],recipe:['Boil eggs and cool.','Pack with grapes, almonds, and carrots.']},
+  {id:'salmon-sheet-pan',cat:'Batch',name:'Sheet-pan salmon dinners',kcal:640,time:'30 min',ingredients:[i('salmon fillet',6,'oz'),i('sweet potato',1,'piece'),i('broccoli',1.5,'cup'),i('olive oil',1,'tbsp'),i('lemon juice',1,'tbsp')],recipe:['Roast sweet potato first for 15 minutes.','Add salmon and broccoli to the pan.','Roast until salmon flakes easily.']},
+  {id:'chicken-soup',cat:'Batch',name:'Chicken rice soup',kcal:460,time:'45 min',ingredients:[i('chicken breast',6,'oz'),i('chicken broth',2,'cup'),i('brown rice',0.5,'cup'),i('carrots',0.5,'cup'),i('celery',0.5,'cup'),i('onion',0.5,'piece')],recipe:['Simmer chicken, broth, rice, and vegetables.','Shred chicken once cooked.','Season and serve.']},
+  {id:'overnight-oats',cat:'Batch',name:'Overnight oats jar',kcal:440,time:'5 min',ingredients:[i('rolled oats',0.5,'cup'),i('Greek yogurt',0.5,'cup'),i('milk',0.5,'cup'),i('berries',0.5,'cup'),i('chia seeds',1,'tbsp')],recipe:['Mix oats, yogurt, milk, and chia in a jar.','Refrigerate overnight.','Top with berries.']},
+  {id:'med-chicken-pita',cat:'Lunch',name:'Mediterranean chicken pita',kcal:590,time:'15 min',ingredients:[i('pita',1,'piece'),i('chicken breast',5,'oz'),i('tzatziki',2,'tbsp'),i('cucumber',0.5,'cup'),i('tomatoes',0.5,'cup'),i('feta',1,'oz')],recipe:['Warm pita and sliced cooked chicken.','Fill pita with chicken, vegetables, feta, and tzatziki.']},
+  {id:'pork-tenderloin',cat:'Dinner',name:'Pork tenderloin apple slaw',kcal:610,time:'30 min',ingredients:[i('pork tenderloin',6,'oz'),i('cabbage slaw',1.5,'cup'),i('apple',0.5,'piece'),i('Greek yogurt',2,'tbsp'),i('baby potatoes',5,'oz')],recipe:['Roast pork and potatoes.','Mix slaw with apple and yogurt.','Slice pork and serve with slaw.']},
+  {id:'black-bean-eggs',cat:'Breakfast',name:'Black bean egg skillet',kcal:510,time:'15 min',ingredients:[i('eggs',2,'piece'),i('black beans',0.75,'cup'),i('salsa',3,'tbsp'),i('spinach',1,'cup'),i('cheddar',1,'oz')],recipe:['Warm beans and salsa in a skillet.','Add spinach until wilted.','Top with eggs and cheddar.']},
+  {id:'sardine-toast',cat:'Lunch',name:'Sardine tomato toast',kcal:430,time:'8 min',ingredients:[i('sardines',1,'can'),i('whole grain bread',2,'slice'),i('tomatoes',0.5,'cup'),i('arugula',1,'cup'),i('lemon juice',1,'tbsp')],recipe:['Toast bread.','Top with arugula, sardines, tomatoes, and lemon.']},
+  {id:'curry-chickpeas',cat:'Dinner',name:'Chickpea spinach curry',kcal:620,time:'25 min',ingredients:[i('chickpeas',1,'cup'),i('spinach',2,'cup'),i('light coconut milk',0.5,'cup'),i('brown rice',0.75,'cup'),i('curry powder',2,'tsp')],recipe:['Simmer chickpeas with coconut milk and curry powder.','Stir in spinach.','Serve over rice.']}
+];
+function i(item, amount, unit){ return {item, amount, unit}; }
+function mealById(id){ return MEAL_LIBRARY.find(m=>m.id===id); }
+function mealFilters(){ return ['All',...new Set(MEAL_LIBRARY.map(m=>m.cat))]; }
+function setMealFilter(cat){ selectedMealFilter=cat; renderMealPlanner(); }
+function addMealToCart(id, delta=1) {
+  const cart=getMealCart();
+  cart[id]=Math.max(0,(cart[id]||0)+delta);
+  if(!cart[id]) delete cart[id];
+  setMealCart(cart);
+  renderMealPlanner();
+}
+function clearMealCart(){
+  setMealCart({});
+  setGroceryChecked([]);
+  document.getElementById('groceryWrap').classList.remove('show');
+  renderMealPlanner();
+}
+function toggleMealDetails(id){
+  expandedMealId = expandedMealId===id ? null : id;
+  renderMealLibrary();
+}
+function renderMealPlanner(){
+  renderMealFilters();
+  renderMealCart();
+  renderMealLibrary();
+  if(document.getElementById('groceryWrap')?.classList.contains('show')) renderGroceryList(false);
+}
+function renderMealFilters(){
+  const el=document.getElementById('mealFilters'); if(!el) return;
+  el.innerHTML=mealFilters().map(cat=>`<button class="meal-filter-btn${cat===selectedMealFilter?' sel':''}" onclick="setMealFilter('${cat}')">${cat}</button>`).join('');
+}
+function renderMealCart(){
+  const cart=getMealCart(), ids=Object.keys(cart), summary=document.getElementById('mealCartSummary'), items=document.getElementById('mealCartItems');
+  if(!summary || !items) return;
+  const total=ids.reduce((s,id)=>s+(mealById(id)?.kcal||0)*(cart[id]||0),0);
+  const count=ids.reduce((s,id)=>s+(cart[id]||0),0);
+  summary.textContent=count?`${count} meal${count===1?'':'s'} selected - ~${total.toLocaleString()} kcal total`:'No meals selected';
+  items.innerHTML=ids.map(id=>{
+    const meal=mealById(id); if(!meal) return '';
+    return `<div class="cart-item"><span class="cart-item-name">${esc(meal.name)}</span><span class="cart-item-kcal">~${meal.kcal*cart[id]}</span><span class="cart-stepper"><button onclick="addMealToCart('${id}',-1)">-</button><span>${cart[id]}</span><button onclick="addMealToCart('${id}',1)">+</button></span></div>`;
+  }).join('');
+}
+function renderMealLibrary(){
+  const el=document.getElementById('mealLibrary'); if(!el) return;
+  const cart=getMealCart(), q=(document.getElementById('mealSearch')?.value||'').trim().toLowerCase();
+  const meals=MEAL_LIBRARY.filter(m=>(selectedMealFilter==='All'||m.cat===selectedMealFilter) && (!q || (m.name+' '+m.cat+' '+m.ingredients.map(x=>x.item).join(' ')).toLowerCase().includes(q)));
+  let lastCat='';
+  el.innerHTML=meals.map(m=>{
+    const catHead=selectedMealFilter==='All'&&m.cat!==lastCat?`<div class="meal-lib-cat">${m.cat}</div>`:'';
+    lastCat=m.cat;
+    const expanded=expandedMealId===m.id;
+    const qty=cart[m.id]||0;
+    const body=expanded?`<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">${m.ingredients.map(x=>`<div class="meal-ing-row"><span class="meal-ing-name">${esc(x.item)}</span><span class="meal-ing-amt">${fmtAmt(x.amount)} ${esc(x.unit)}</span></div>`).join('')}</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">${m.recipe.map(step=>`<li>${esc(step)}</li>`).join('')}</ol></div>`:'';
+    return `${catHead}<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails('${m.id}')"><div class="meal-card-info"><span class="meal-card-name">${esc(m.name)}</span><div class="meal-card-meta">~${m.kcal} kcal - ${m.time} - ${m.ingredients.length} ingredients</div></div><button class="meal-add-btn${qty?' in-cart':''}" onclick="event.stopPropagation();addMealToCart('${m.id}',1)">${qty?qty+'x':'+'}</button></div>${body}</div>`;
+  }).join('') || '<div class="empty">No matching meals.</div>';
+}
+function fmtAmt(n){ return Number.isInteger(n)?String(n):String(Math.round(n*100)/100); }
+function groceryRows(){
+  const cart=getMealCart(), grouped={};
+  Object.keys(cart).forEach(id=>{
+    const meal=mealById(id); if(!meal) return;
+    meal.ingredients.forEach(x=>{
+      const key=(x.item+'|'+x.unit).toLowerCase();
+      if(!grouped[key]) grouped[key]={item:x.item,unit:x.unit,amount:0};
+      grouped[key].amount += x.amount * cart[id];
+    });
+  });
+  return Object.values(grouped).sort((a,b)=>a.item.localeCompare(b.item));
+}
+function renderGroceryList(show){
+  const wrap=document.getElementById('groceryWrap'), el=document.getElementById('groceryList'); if(!wrap||!el) return;
+  if(show) wrap.classList.add('show');
+  const checked=new Set(getGroceryChecked()), rows=groceryRows();
+  if(!rows.length){ el.innerHTML='<div class="empty">Select meals to build a grocery list.</div>'; return; }
+  el.innerHTML=rows.map(x=>{
+    const key=`${x.item}|${x.unit}`;
+    const done=checked.has(key);
+    return `<label class="grocery-item${done?' done':''}"><input type="checkbox" ${done?'checked':''} onchange="toggleGroceryItem('${esc(key)}',this.checked)"><span class="gi-name">${esc(x.item)}</span><span class="gi-amt">${fmtAmt(x.amount)} ${esc(x.unit)}</span></label>`;
+  }).join('');
+}
+function toggleGroceryItem(key, checked){
+  const set=new Set(getGroceryChecked());
+  checked ? set.add(key) : set.delete(key);
+  setGroceryChecked([...set]);
+  renderGroceryList(false);
+}
+function groceryText(){
+  return groceryRows().map(x=>`${fmtAmt(x.amount)} ${x.unit} ${x.item}`).join('\n');
+}
+async function copyGroceryList(){
+  const text=groceryText();
+  if(!text){ showToast('Select meals first'); return; }
+  try { await navigator.clipboard.writeText(text); showToast('Grocery list copied'); }
+  catch { showToast(text); }
 }
 
 /* ══ Save check-in ══ */
@@ -738,9 +1130,25 @@ function saveMetrics() {
 function renderMetrics() {
   const m=getMetrics();
   if(m.updatedAt){ const d=Math.round((Date.now()-new Date(m.updatedAt))/864e5); document.getElementById('metricsUpdated').textContent=d===0?'updated today':d===1?'updated yesterday':`updated ${d}d ago`; }
-  if(m.vo2max){ const el=document.getElementById('mv-vo2'); el.textContent=m.vo2max.toFixed(1); el.style.color=m.vo2max>=41?'var(--green-mid)':m.vo2max>=38?'var(--amber)':'var(--red)'; document.getElementById('pb-vo2').style.width=Math.min(100,Math.max(0,((m.vo2max-32)/(41-32))*100))+'%'; document.getElementById('g-vo2-cur').textContent=m.vo2max.toFixed(1); document.getElementById('g-vo2-cur').className='goal-cur '+(m.vo2max>=41?'cg':m.vo2max>=38?'ca':'cr'); document.getElementById('gs-vo2').textContent=m.vo2max>=41?'Goal reached! 🎉':m.vo2max>=38?'Getting there — keep up the cardio':'Below avg for age — cardio first'; }
-  if(m.rhr){ const el=document.getElementById('mv-rhr'); el.textContent=m.rhr+' bpm'; el.style.color=m.rhr<68?'var(--green-mid)':m.rhr<75?'var(--amber)':'var(--red)'; document.getElementById('pb-rhr').style.width=Math.min(100,Math.max(0,((105-m.rhr)/(105-68))*100))+'%'; document.getElementById('g-rhr-cur').textContent=m.rhr+' bpm'; document.getElementById('g-rhr-cur').className='goal-cur '+(m.rhr<68?'cg':m.rhr<75?'ca':'cr'); }
-  if(m.hrv){ const el=document.getElementById('mv-hrv'); el.textContent=m.hrv+' ms'; el.style.color=m.hrv>=48?'var(--green-mid)':m.hrv>=40?'var(--amber)':'var(--red)'; document.getElementById('pb-hrv').style.width=Math.min(100,Math.max(0,((m.hrv-26)/(48-26))*100))+'%'; document.getElementById('g-hrv-cur').textContent=m.hrv+' ms'; document.getElementById('g-hrv-cur').className='goal-cur '+(m.hrv>=48?'cg':m.hrv>=40?'ca':'cr'); }
+  if(m.vo2max){
+    const el=document.getElementById('mv-vo2'); el.textContent=m.vo2max.toFixed(1); el.style.color=m.vo2max>=41?'var(--green-mid)':m.vo2max>=35?'var(--amber)':'var(--red)';
+    document.getElementById('g-vo2-cur').textContent=m.vo2max.toFixed(1);
+    document.getElementById('g-vo2-cur').className='goal-cur '+(m.vo2max>=41?'cg':m.vo2max>=35?'ca':'cr');
+    document.getElementById('gs-vo2').textContent=m.vo2max>=41?'Goal reached! 🎉':m.vo2max>=38?'Getting there — keep up the cardio':'Below avg for age — cardio first';
+    setMarker('vo2', ((m.vo2max-30)/20)*100, m.vo2max>=41?'#639922':m.vo2max>=35?'#d4873a':'#ef5350');
+  }
+  if(m.rhr){
+    const el=document.getElementById('mv-rhr'); el.textContent=m.rhr; el.style.color=m.rhr<68?'var(--green-mid)':m.rhr<75?'var(--amber)':'var(--red)';
+    document.getElementById('g-rhr-cur').textContent=m.rhr;
+    document.getElementById('g-rhr-cur').className='goal-cur '+(m.rhr<68?'cg':m.rhr<75?'ca':'cr');
+    setMarker('rhr', ((90-m.rhr)/35)*100, m.rhr<68?'#639922':m.rhr<75?'#d4873a':'#ef5350');
+  }
+  if(m.hrv){
+    const el=document.getElementById('mv-hrv'); el.textContent=m.hrv; el.style.color=m.hrv>=48?'var(--green-mid)':m.hrv>=40?'var(--amber)':'var(--red)';
+    document.getElementById('g-hrv-cur').textContent=m.hrv;
+    document.getElementById('g-hrv-cur').className='goal-cur '+(m.hrv>=48?'cg':m.hrv>=40?'ca':'cr');
+    setMarker('hrv', ((m.hrv-20)/40)*100, m.hrv>=48?'#639922':m.hrv>=40?'#d4873a':'#ef5350');
+  }
 }
 
 /* ══ Plan tab ══ */
@@ -776,6 +1184,14 @@ function saveWeekFocus(){ const p=getPlan(); p.weekFocus[selectedPlanWeek]=docum
 function saveDayW(dk,v,el){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].workout=v; savePlan(p); el.closest('.plan-w-grid').querySelectorAll('.pw-btn').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
 function saveDayN(dk,v){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].note=v; savePlan(p); }
 
+/* ══ Zone marker helper ══ */
+function setMarker(id, pct, color) {
+  const el = document.getElementById('zm-'+id);
+  if (!el) return;
+  el.style.left = Math.min(100,Math.max(0,pct))+'%';
+  el.style.borderColor = color;
+}
+
 /* ══ Render (stats + goal bars) ══ */
 function render() {
   const log=getLog(), now=new Date();
@@ -798,21 +1214,21 @@ function render() {
   document.getElementById('s-streak').className='num '+(streak>=5?'cg':streak>=2?'ca':'cr');
 
   const lw=log.find(e=>e.weight)?.weight||175;
-  document.getElementById('pb-weight').style.width=Math.min(100,Math.max(0,((175-lw)/10)*100))+'%';
   document.getElementById('g-weight-cur').textContent=lw.toFixed(1);
   document.getElementById('g-weight-cur').className='goal-cur '+(lw<=165?'cg':lw<=169?'ca':'cr');
-  document.getElementById('gs-weight').textContent=lw>165?(lw-165).toFixed(1)+' lbs to go':'Goal reached! 🎉';
+  document.getElementById('gs-weight').textContent=lw>165?(lw-165).toFixed(1)+' lbs to go · 0.83 lbs/week pace':'Goal reached! 🎉';
+  setMarker('weight', ((175-lw)/10)*100, lw<=165?'#639922':lw<=169?'#d4873a':'#ef5350');
 
   const rd=log.slice(0,7).map(e=>e.dist||0), ad=rd.length?rd.reduce((a,b)=>a+b)/rd.length:3.5;
-  document.getElementById('pb-dist').style.width=Math.min(100,(ad/6)*100)+'%';
-  document.getElementById('g-dist-cur').textContent=ad.toFixed(1)+' km';
+  document.getElementById('g-dist-cur').textContent=ad.toFixed(1);
   document.getElementById('g-dist-cur').className='goal-cur '+(ad>=6?'cg':ad>=4?'ca':'cr');
+  setMarker('dist', (ad/8)*100, ad>=6?'#639922':ad>=4?'#d4873a':'#ef5350');
 
   const rs=log.slice(0,7).filter(e=>e.sleep>0).map(e=>e.sleep), as2=rs.length?rs.reduce((a,b)=>a+b)/rs.length:6.5;
-  document.getElementById('pb-sleep').style.width=Math.min(100,(as2/7.5)*100)+'%';
-  document.getElementById('g-sleep-cur').textContent=as2.toFixed(1)+' hrs';
+  document.getElementById('g-sleep-cur').textContent=as2.toFixed(1);
   document.getElementById('g-sleep-cur').className='goal-cur '+(as2>=7.5?'cg':as2>=7?'ca':'cr');
   document.getElementById('gs-sleep').textContent=as2>=7.5?'On target — keep it up':'Earlier bedtime = better HRV & recovery';
+  setMarker('sleep', ((as2-4.5)/5)*100, as2>=7.5?'#639922':as2>=7?'#d4873a':'#ef5350');
 
   renderLog(log);
 }
@@ -854,7 +1270,7 @@ function renderChart() {
 selectedPlanWeek=weekNum();
 setupDrag('starRow', 'data-r', setRating);
 setupDrag('moodRow', 'data-m', setMood);
-render(); renderMetrics(); loadTodayEntry(); checkBanner(); initPush(); scheduleReminder();
+render(); renderMetrics(); renderMealPlanner(); loadTodayEntry(); checkBanner(); initPush(); scheduleReminder(); restoreBackup();
 window.scrollTo({ top: 0, behavior: 'instant' });
 </script>
 </body>
