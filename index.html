@@ -200,6 +200,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .plan-w-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
 .pw-btn { padding: 8px 4px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 500; cursor: pointer; background: var(--bg); color: var(--text); font-family: inherit; text-align: center; }
 .pw-btn.sel { background: var(--green-bg); border-color: #8bc34a; color: var(--green); font-weight: 600; }
+.plan-detail-row { display: grid; grid-template-columns: 92px 1fr; gap: 8px; margin-bottom: 8px; }
+.plan-distance { width: 100%; border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; background: var(--bg); outline: none; color: var(--text); }
+.plan-distance:focus { border-color: var(--blue-mid); background: #fff; }
 .plan-notes { width: 100%; border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; background: var(--bg); outline: none; resize: none; height: 46px; color: var(--text); }
 .plan-notes:focus { border-color: var(--blue-mid); background: #fff; }
 
@@ -295,6 +298,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .goal-panel.show { display: block; }
 .history-actions { display: flex; justify-content: flex-end; margin: 18px 0 8px; }
 .history-add-btn { padding: 8px 12px; border: 0.5px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--blue-mid); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.missed-form { display: none; background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.missed-form.show { display: block; }
+.missed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.missed-grid input { width: 100%; padding: 9px 10px; border: 0.5px solid var(--border); border-radius: 8px; background: var(--bg); font: inherit; font-size: 13px; }
+.missed-date { grid-column: 1 / -1; }
+.missed-section { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 12px 0 8px; }
+.missed-workout-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+.missed-w-btn { padding: 8px 4px; border: 0.5px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
+.missed-w-btn.selected { background: var(--green-bg); border-color: #8bc34a; color: var(--green); font-weight: 600; }
+.missed-vibe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.missed-vibe-row .star-row, .missed-vibe-row .mood-row { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 6px; justify-content: space-between; }
+.missed-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
 /* 5-tab nav */
 .nav-btn { padding: 8px 2px 6px; }
@@ -389,11 +404,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div class="vibe-block">
           <label>Mood</label>
           <div class="mood-row" id="moodRow">
-            <button class="mood-btn" data-m="1">1</button>
-            <button class="mood-btn" data-m="2">2</button>
-            <button class="mood-btn" data-m="3">3</button>
-            <button class="mood-btn" data-m="4">4</button>
-            <button class="mood-btn" data-m="5">5</button>
+            <button class="mood-btn" data-m="1">😞</button>
+            <button class="mood-btn" data-m="2">😐</button>
+            <button class="mood-btn" data-m="3">🙂</button>
+            <button class="mood-btn" data-m="4">😊</button>
+            <button class="mood-btn" data-m="5">🤩</button>
           </div>
         </div>
       </div>
@@ -568,14 +583,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">Weight</span>
           <div class="goal-right">
             <div><span class="goal-cur cr" id="g-weight-cur">175.0</span><span class="goal-unit">lbs</span></div>
-            <div class="goal-tgt-label">target · 165 lbs</div>
+            <div class="goal-tgt-label">target - 165 lbs</div>
           </div>
         </div>
         <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 38%,#8bc34a 68%,#3b8c10 100%)">
           <div class="zone-marker" id="zm-weight"></div>
         </div>
         <div class="zone-labels"><span>175 lbs</span><span>170</span><span>165 ✓</span></div>
-        <div class="goal-sub" id="gs-weight">10 lbs to go · 0.83 lbs/week pace</div>
+        <div class="goal-sub" id="gs-weight">10 lbs to go - 0.83 lbs/week pace</div>
       </div>
 
       <!-- Body fat -->
@@ -584,7 +599,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">Body fat</span>
           <div class="goal-right">
             <div><span class="goal-cur ca">~20</span><span class="goal-unit">%</span></div>
-            <div class="goal-tgt-label">target · ~15%</div>
+            <div class="goal-tgt-label">target - ~15%</div>
           </div>
         </div>
         <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 33%,#8bc34a 67%,#3b8c10 93%)">
@@ -602,7 +617,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">VO2 Max</span>
           <div class="goal-right">
             <div><span class="goal-cur cr" id="g-vo2-cur">—</span><span class="goal-unit">ml/kg/min</span></div>
-            <div class="goal-tgt-label">target · 41+</div>
+            <div class="goal-tgt-label">target - 41+</div>
           </div>
         </div>
         <div class="zone-track" style="background:linear-gradient(to right,#ef5350 0%,#EF9F27 30%,#8bc34a 63%,#3b8c10 90%)">
@@ -619,7 +634,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">Resting HR</span>
           <div class="goal-right">
             <div><span class="goal-cur ca" id="g-rhr-cur">—</span><span class="goal-unit">bpm</span></div>
-            <div class="goal-tgt-label">target · &lt;68 bpm</div>
+            <div class="goal-tgt-label">target - &lt;68 bpm</div>
           </div>
         </div>
         <!-- Scale 90→55 (lower = right = better) -->
@@ -637,7 +652,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">HRV</span>
           <div class="goal-right">
             <div><span class="goal-cur cr" id="g-hrv-cur">—</span><span class="goal-unit">ms</span></div>
-            <div class="goal-tgt-label">target · 48+ ms</div>
+            <div class="goal-tgt-label">target - 48+ ms</div>
           </div>
         </div>
         <!-- Scale 20→60 -->
@@ -655,7 +670,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">Daily distance</span>
           <div class="goal-right">
             <div><span class="goal-cur ca" id="g-dist-cur">3.5</span><span class="goal-unit">km avg</span></div>
-            <div class="goal-tgt-label">target · 6 km/day</div>
+            <div class="goal-tgt-label">target - 6 km/day</div>
           </div>
         </div>
         <!-- Scale 0→8 km -->
@@ -673,7 +688,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">Sleep</span>
           <div class="goal-right">
             <div><span class="goal-cur cr" id="g-sleep-cur">6.5</span><span class="goal-unit">hrs</span></div>
-            <div class="goal-tgt-label">target · 7.5 hrs</div>
+            <div class="goal-tgt-label">target - 7.5 hrs</div>
           </div>
         </div>
         <!-- Scale 4.5→9.5 hrs -->
@@ -691,7 +706,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <span class="goal-name">Calories</span>
           <div class="goal-right">
             <div><span class="goal-cur ca" id="g-cal-cur">0</span><span class="goal-unit">kcal avg</span></div>
-            <div class="goal-tgt-label">target ? steady deficit</div>
+            <div class="goal-tgt-label" id="g-cal-target">target based on weight and distance goals</div>
           </div>
         </div>
         <div class="zone-track" style="background:linear-gradient(to right,#3b8c10 0%,#8bc34a 45%,#EF9F27 75%,#ef5350 100%)">
@@ -706,16 +721,62 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 
     <div class="slabel" style="margin-top:24px;">Milestones</div>
     <div class="card" style="font-size:13px;line-height:1.9;color:#444;">
-      <div style="margin-bottom:8px;"><strong style="color:var(--text);">Weeks 1–4:</strong> 3× zone 2 · 2× weights · Sleep with watch · Cut alcohol &amp; late snacks</div>
-      <div style="margin-bottom:8px;"><strong style="color:var(--text);">Weeks 5–8:</strong> 2× runs (30–40 min) · 1× intervals · 2× weights · RHR starts dropping</div>
-      <div><strong style="color:var(--text);">Weeks 9–12:</strong> 2× runs · 2× weights · 1× long hike · Goal: run 5K without stopping</div>
+      <div style="margin-bottom:8px;"><strong style="color:var(--text);">Weeks 1–4:</strong> 3× zone 2 - 2× weights - Sleep with watch - Cut alcohol &amp; late snacks</div>
+      <div style="margin-bottom:8px;"><strong style="color:var(--text);">Weeks 5–8:</strong> 2× runs (30–40 min) - 1× intervals - 2× weights - RHR starts dropping</div>
+      <div><strong style="color:var(--text);">Weeks 9–12:</strong> 2× runs - 2× weights - 1× long hike - Goal: run 5K without stopping</div>
     </div>
   </div>
 
   <!-- ═══ HISTORY ═══ -->
   <div class="page" id="page-history">
     <div class="history-actions">
-      <button class="history-add-btn" onclick="addMissedEntry()">Add missed day</button>
+      <button class="history-add-btn" onclick="toggleMissedEntryForm()">Add missed day</button>
+    </div>
+    <div class="missed-form" id="missedForm">
+      <div class="missed-grid">
+        <input class="missed-date" type="date" id="missedDate">
+        <input type="number" id="missedDist" placeholder="Distance km" step="0.1" inputmode="decimal">
+        <input type="number" id="missedSleep" placeholder="Sleep hrs" step="0.25" inputmode="decimal">
+        <input type="number" id="missedWeight" placeholder="Weight lbs" step="0.1" inputmode="decimal">
+      </div>
+      <div class="missed-section">Workout</div>
+      <div class="missed-workout-grid" id="missedWorkoutGrid">
+        <button class="missed-w-btn selected" data-val="none" onclick="toggleMissedWorkout('none')">Rest</button>
+        <button class="missed-w-btn" data-val="walk" onclick="toggleMissedWorkout('walk')">Walk</button>
+        <button class="missed-w-btn" data-val="run" onclick="toggleMissedWorkout('run')">Run</button>
+        <button class="missed-w-btn" data-val="weights" onclick="toggleMissedWorkout('weights')">Weights</button>
+      </div>
+      <div class="missed-vibe-row">
+        <div>
+          <div class="missed-section" style="margin-top:0;">Day rating</div>
+          <div class="star-row" id="missedStarRow">
+            <button class="star-btn" data-r="1" onclick="setMissedRating(1)">★</button>
+            <button class="star-btn" data-r="2" onclick="setMissedRating(2)">★</button>
+            <button class="star-btn" data-r="3" onclick="setMissedRating(3)">★</button>
+            <button class="star-btn" data-r="4" onclick="setMissedRating(4)">★</button>
+            <button class="star-btn" data-r="5" onclick="setMissedRating(5)">★</button>
+          </div>
+        </div>
+        <div>
+          <div class="missed-section" style="margin-top:0;">Mood</div>
+          <div class="mood-row" id="missedMoodRow">
+            <button class="mood-btn" data-m="1" onclick="setMissedMood(1)">😞</button>
+            <button class="mood-btn" data-m="2" onclick="setMissedMood(2)">😐</button>
+            <button class="mood-btn" data-m="3" onclick="setMissedMood(3)">🙂</button>
+            <button class="mood-btn" data-m="4" onclick="setMissedMood(4)">😊</button>
+            <button class="mood-btn" data-m="5" onclick="setMissedMood(5)">🤩</button>
+          </div>
+        </div>
+      </div>
+      <div class="missed-grid">
+        <input type="number" id="missedWater" placeholder="Water L" step="0.25" inputmode="decimal">
+        <input type="number" id="missedAlcohol" placeholder="Alcohol" step="1" inputmode="numeric">
+        <input type="number" id="missedCalories" placeholder="Calories" inputmode="numeric">
+      </div>
+      <div class="missed-actions">
+        <button class="meal-secondary-btn" onclick="toggleMissedEntryForm(false)">Cancel</button>
+        <button class="meal-add-btn" onclick="saveMissedEntry()">Save missed day</button>
+      </div>
     </div>
     <div class="slabel" style="margin-top:8px;">Distance (last 14 days)</div>
     <div class="chart-wrap">
@@ -748,7 +809,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
     Plan
   </button>
   <button class="nav-btn" onclick="showPage('meals',this)">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M4 4l4 4"/><path d="M20 4l-4 4"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M7 2v9"/><path d="M4 2v4a3 3 0 006 0V2"/><path d="M7 11v11"/><path d="M17 2v20"/><path d="M17 2c2.2 1.5 3 3.8 3 7v2h-3"/></svg>
     Meals
   </button>
   <button class="nav-btn" onclick="showPage('goals',this)">
@@ -774,7 +835,7 @@ const CUSTOM_MEALS_KEY = 'ethan_custom_meals';
 const BACKUP_KEY   = 'ethan_backup_meta';
 const START        = new Date('2026-05-17'); // Sunday
 const TOTAL_WEEKS  = 12;
-const MOOD_EMOJI = ['', 'Very low', 'Low', 'Okay', 'Good', 'Great'];
+const MOOD_EMOJI = ['', '😞', '😐', '🙂', '😊', '🤩'];
 
 /* ══ State ══ */
 let selectedWorkouts = new Set();   // empty = rest day
@@ -793,6 +854,9 @@ let restoringBackup = false;
 let selectedLogDate = null;
 let editingToday = false;
 let selectedGoalsView = 'actual';
+let missedWorkouts = new Set();
+let missedRating = 0;
+let missedMood = 0;
 
 /* ══ Storage (with v2→v3 migration) ══ */
 function getLog() {
@@ -891,7 +955,7 @@ function weekNum(){ return Math.max(1,Math.min(TOTAL_WEEKS,Math.floor((Date.now(
 function fmtDate(s){ return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
 function dstr(d)  { return d.toISOString().slice(0,10); }
 function esc(s)   { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function wText(ws){ return (!ws||!ws.length)?'Rest':ws.map(w=>({walk:'Walk',run:'Run',weights:'Weights'}[w]||w)).join(' · '); }
+function wText(ws){ return (!ws||!ws.length)?'Rest':ws.map(w=>({walk:'Walk',run:'Run',weights:'Weights'}[w]||w)).join(' - '); }
 
 /* ══ Service worker ══ */
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
@@ -1054,17 +1118,27 @@ function setMealKcal(v){
 }
 function selKcal(el){ setMealKcal(el.dataset.kcal); }
 function selQ(el) { document.querySelectorAll('.q-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealQ=el.dataset.q; }
+function advanceMealKind(){
+  const idx=MEAL_DEFAULTS.indexOf(mealKind);
+  mealKind=MEAL_DEFAULTS[Math.min(idx+1, MEAL_DEFAULTS.length-1)] || 'Snack';
+  mealQ='Clean';
+  setMealKcal(500);
+  document.getElementById('mealName').value='';
+  renderMealKindBtns();
+  document.querySelectorAll('.q-chip').forEach(c=>c.classList.toggle('sel', c.dataset.q===mealQ));
+  document.getElementById('mealName').focus();
+}
 function addMeal() {
   if(!mealQ) mealQ='Clean';
   const name=document.getElementById('mealName').value.trim() || mealKind;
   currentMeals.push({name,kcal:mealKcal||0,quality:mealQ,kind:mealKind,skipped:false});
   renderMeals();
-  closeMealForm();
+  advanceMealKind();
 }
 function skipMeal() {
   currentMeals.push({name:mealKind,kcal:0,quality:'Clean',kind:mealKind,skipped:true});
   renderMeals();
-  closeMealForm();
+  advanceMealKind();
 }
 function removeMeal(i){ currentMeals.splice(i,1); renderMeals(); }
 function renderMeals(list) {
@@ -1219,13 +1293,68 @@ function updateTodayCompleteState(){
   card.classList.toggle('is-complete', show);
   if(e&&meta){
     const kcal=(e.meals||[]).filter(m=>!m.skipped).reduce((sum,m)=>sum+(m.kcal||0),0);
-    meta.textContent=[e.dist?e.dist.toFixed(1)+' km':null,e.sleep?e.sleep.toFixed(1)+'h sleep':null,kcal?kcal+' kcal':null].filter(Boolean).join(' ? ') || 'Entry saved';
+    meta.textContent=[e.dist?e.dist.toFixed(1)+' km':null,e.sleep?e.sleep.toFixed(1)+'h sleep':null,kcal?kcal+' kcal':null].filter(Boolean).join(' | ') || 'Entry saved';
   }
 }
-function addMissedEntry(){
-  const date=prompt('Date to add, YYYY-MM-DD');
-  if(!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
-  editingToday=true; loadEntryForDate(date); showPage('today', document.querySelector('.nav-btn'));
+function toggleMissedEntryForm(show){
+  const form=document.getElementById('missedForm');
+  const shouldShow=show===undefined?!form.classList.contains('show'):show;
+  form.classList.toggle('show', shouldShow);
+  if(shouldShow && !document.getElementById('missedDate').value){
+    const d=new Date(); d.setDate(d.getDate()-1);
+    document.getElementById('missedDate').value=dstr(d);
+  }
+  if(shouldShow) renderMissedControls();
+}
+function toggleMissedWorkout(val){
+  if(val==='none') missedWorkouts.clear();
+  else {
+    if(missedWorkouts.has(val)) missedWorkouts.delete(val);
+    else missedWorkouts.add(val);
+  }
+  renderMissedControls();
+}
+function setMissedRating(r){
+  missedRating = missedRating===r ? 0 : r;
+  renderMissedControls();
+}
+function setMissedMood(m){
+  missedMood = missedMood===m ? 0 : m;
+  renderMissedControls();
+}
+function renderMissedControls(){
+  document.querySelectorAll('#missedWorkoutGrid .missed-w-btn').forEach(b=>{
+    const v=b.dataset.val;
+    b.classList.toggle('selected', v==='none'?missedWorkouts.size===0:missedWorkouts.has(v));
+  });
+  document.querySelectorAll('#missedStarRow .star-btn').forEach(b=>b.classList.toggle('lit', +b.dataset.r<=missedRating));
+  document.querySelectorAll('#missedMoodRow .mood-btn').forEach(b=>b.classList.toggle('lit', +b.dataset.m===missedMood));
+}
+function saveMissedEntry(){
+  const date=document.getElementById('missedDate').value;
+  if(!date){ showToast('Pick a date'); return; }
+  const calories=parseInt(document.getElementById('missedCalories').value,10)||0;
+  const entry={
+    date,
+    dist:parseFloat(document.getElementById('missedDist').value)||0,
+    sleep:parseFloat(document.getElementById('missedSleep').value)||0,
+    weight:parseFloat(document.getElementById('missedWeight').value)||null,
+    workouts:[...missedWorkouts],
+    rating:missedRating||null,
+    mood:missedMood||null,
+    water:parseFloat(document.getElementById('missedWater').value)||0,
+    alcohol:parseFloat(document.getElementById('missedAlcohol').value)||0,
+    meals:calories?[{name:'Manual total',kcal:calories,quality:'Mixed',kind:'Day',skipped:false}]:[]
+  };
+  const log=getLog(), idx=log.findIndex(e=>e.date===date);
+  if(idx>=0) log[idx]={...log[idx],...entry}; else log.unshift(entry);
+  log.sort((a,b)=>b.date.localeCompare(a.date));
+  saveLog(log);
+  ['missedDist','missedSleep','missedWeight','missedCalories','missedWater','missedAlcohol'].forEach(id=>document.getElementById(id).value='');
+  missedWorkouts.clear(); missedRating=0; missedMood=0; renderMissedControls();
+  toggleMissedEntryForm(false);
+  render(); renderChart();
+  showToast('Missed day saved');
 }
 
 /* Manual health metrics */
@@ -1282,32 +1411,54 @@ function renderWeekPills() {
   setTimeout(()=>{ const s=document.querySelector('.wk-pill.sel'); if(s)s.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'}); },60);
 }
 function selectPlanWeek(w){ selectedPlanWeek=w; renderPlan(); }
+function defaultWeekFocus(w){
+  if(w<=4) return 'Build consistency: daily walks, two strength sessions, sleep routine, steady calorie deficit.';
+  if(w<=8) return 'Build aerobic base: longer walks, two runs, two strength sessions, keep calories near target.';
+  return 'Consolidate fitness: 5K readiness, longer hike or walk, maintain strength and recovery.';
+}
+function defaultPlanDay(w, dayIndex){
+  const phase=w<=4?1:w<=8?2:3;
+  const templates={
+    1:[['walk',3.5,'Zone 2 walk. Keep it easy.'],['weights',2,'Full-body strength plus short walk.'],['walk',4,'Brisk walk. Finish with mobility.'],['none',0,'Recovery day. Prioritize sleep and calories.'],['weights',2,'Full-body strength plus short walk.'],['walk',4.5,'Longer easy walk.'],['walk',5,'Outdoor walk or light hike.']],
+    2:[['run',4,'Run/walk intervals. Keep effort controlled.'],['weights',2,'Strength session plus easy walk.'],['walk',5,'Zone 2 walk.'],['run',4.5,'Easy run or run/walk.'],['weights',2,'Strength session.'],['walk',5.5,'Long walk.'],['none',0,'Recovery and meal prep.']],
+    3:[['run',5,'Easy run. Build toward continuous 5K.'],['weights',2,'Strength maintenance.'],['walk',6,'Zone 2 walk.'],['run',5.5,'Run with short pickups if feeling good.'],['weights',2,'Strength maintenance plus mobility.'],['walk',7,'Long walk or hike.'],['none',0,'Recovery. Review the week.']]
+  };
+  const [workout,distance,note]=templates[phase][dayIndex];
+  return {workout,distance,note};
+}
 
 function renderPlan() {
   renderWeekPills();
   const w=selectedPlanWeek, plan=getPlan(), start=getWeekStart(w), end=new Date(start);
   end.setDate(start.getDate()+6);
-  document.getElementById('planWeekTitle').textContent=`Week ${w} of ${TOTAL_WEEKS}`;
-  document.getElementById('planWeekDates').textContent=start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  document.getElementById('planFocus').value=plan.weekFocus[w]||'';
+  document.getElementById('planWeekTitle').textContent='Week '+w+' of '+TOTAL_WEEKS;
+  document.getElementById('planWeekDates').textContent=start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' - '+end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('planFocus').value=plan.weekFocus[w] ?? defaultWeekFocus(w);
   const tod=today();
   document.getElementById('planDays').innerHTML=Array.from({length:7},(_,i)=>{
     const d=new Date(start); d.setDate(start.getDate()+i);
-    const dk=dstr(d),isT=dk===tod,dp=plan.days[dk]||{},selW=dp.workout||'none';
-    const wBtns=['Rest','Walk','Run','Weights'].map((l,j)=>{ const v=['none','walk','run','weights'][j]; return `<button class="pw-btn${v===selW?' sel':''}" onclick="saveDayW('${dk}','${v}',this)">${l}</button>`; }).join('');
-    return `<div class="plan-day${isT?' is-today':''}"><div class="plan-day-hdr"><span class="plan-day-name">${d.toLocaleDateString('en-US',{weekday:'short'})}</span><span class="plan-day-date">${fmtDate(dk)}</span>${isT?'<span class="today-tag">Today</span>':''}</div><div class="plan-w-grid">${wBtns}</div><textarea class="plan-notes" placeholder="Notes — meals, time, target…" oninput="saveDayN('${dk}',this.value)">${esc(dp.note||'')}</textarea></div>`;
+    const dk=dstr(d), isT=dk===tod, dp={...defaultPlanDay(w,i), ...(plan.days[dk]||{})}, selW=dp.workout||'none';
+    const wBtns=['Rest','Walk','Run','Weights'].map((l,j)=>{ const v=['none','walk','run','weights'][j]; return '<button class="pw-btn'+(v===selW?' sel':'')+'" onclick="saveDayW(\''+dk+'\',\''+v+'\',this)">'+l+'</button>'; }).join('');
+    return '<div class="plan-day'+(isT?' is-today':'')+'"><div class="plan-day-hdr"><span class="plan-day-name">'+d.toLocaleDateString('en-US',{weekday:'short'})+'</span><span class="plan-day-date">'+fmtDate(dk)+'</span>'+(isT?'<span class="today-tag">Today</span>':'')+'</div><div class="plan-w-grid">'+wBtns+'</div><div class="plan-detail-row"><input class="plan-distance" type="number" min="0" max="30" step="0.5" inputmode="decimal" value="'+(dp.distance||0)+'" oninput="saveDayD(\''+dk+'\',this.value)" aria-label="Distance target"><textarea class="plan-notes" placeholder="Notes - meals, time, target" oninput="saveDayN(\''+dk+'\',this.value)">'+esc(dp.note||'')+'</textarea></div></div>';
   }).join('');
 }
 function saveWeekFocus(){ const p=getPlan(); p.weekFocus[selectedPlanWeek]=document.getElementById('planFocus').value; savePlan(p); }
 function saveDayW(dk,v,el){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].workout=v; savePlan(p); el.closest('.plan-w-grid').querySelectorAll('.pw-btn').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
+function saveDayD(dk,v){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].distance=parseFloat(v)||0; savePlan(p); }
 function saveDayN(dk,v){ const p=getPlan(); if(!p.days[dk])p.days[dk]={}; p.days[dk].note=v; savePlan(p); }
-
-/* ══ Zone marker helper ══ */
 function setMarker(id, pct, color) {
   const el = document.getElementById('zm-'+id);
   if (!el) return;
   el.style.left = Math.min(100,Math.max(0,pct))+'%';
   el.style.borderColor = color;
+}
+function calorieTarget(currentWeight, avgDistance) {
+  const remainingLoss=Math.max(0,currentWeight-165);
+  const weeksLeft=Math.max(1,TOTAL_WEEKS-weekNum()+1);
+  const dailyDeficit=Math.min(700, Math.max(250, (remainingLoss/weeksLeft)*500));
+  const activityCredit=Math.min(6, Math.max(0, avgDistance||0))*45;
+  const estimatedMaintenance=2400+activityCredit;
+  return Math.round(Math.max(1700, Math.min(2600, estimatedMaintenance-dailyDeficit))/25)*25;
 }
 
 /* ══ Render (stats + goal bars) ══ */
@@ -1334,7 +1485,7 @@ function render() {
   const lw=log.find(e=>e.weight)?.weight||175;
   document.getElementById('g-weight-cur').textContent=lw.toFixed(1);
   document.getElementById('g-weight-cur').className='goal-cur '+(lw<=165?'cg':lw<=169?'ca':'cr');
-  document.getElementById('gs-weight').textContent=lw>165?(lw-165).toFixed(1)+' lbs to go · 0.83 lbs/week pace':'Goal reached';
+  document.getElementById('gs-weight').textContent=lw>165?(lw-165).toFixed(1)+' lbs to go - 0.83 lbs/week pace':'Goal reached';
   setMarker('weight', ((175-lw)/10)*100, lw<=165?'#639922':lw<=169?'#d4873a':'#ef5350');
 
   const rd=log.slice(0,7).map(e=>e.dist||0), ad=rd.length?rd.reduce((a,b)=>a+b)/rd.length:3.5;
@@ -1352,10 +1503,12 @@ function render() {
   const avgCal=calEntries.length?calEntries.reduce((a,b)=>a+b,0)/calEntries.length:0;
   const calEl=document.getElementById('g-cal-cur');
   if(calEl){
+    const targetCal=calorieTarget(lw, ad);
     calEl.textContent=avgCal?Math.round(avgCal).toLocaleString():'0';
-    calEl.className='goal-cur '+(avgCal&&avgCal<=2400?'cg':avgCal<=2800?'ca':'cr');
-    document.getElementById('gs-cal').textContent=avgCal?'7-day average from food logs':'Log meals to track calories';
-    setMarker('cal', (avgCal/3200)*100, avgCal&&avgCal<=2400?'#639922':avgCal<=2800?'#d4873a':'#ef5350');
+    calEl.className='goal-cur '+(avgCal&&avgCal<=targetCal?'cg':avgCal<=targetCal+300?'ca':'cr');
+    document.getElementById('g-cal-target').textContent='target - ~'+targetCal.toLocaleString()+' kcal/day';
+    document.getElementById('gs-cal').textContent=avgCal?'Based on 165 lb goal, current weight, and distance average':'Log meals to track calories';
+    setMarker('cal', (avgCal/3200)*100, avgCal&&avgCal<=targetCal?'#639922':avgCal<=targetCal+300?'#d4873a':'#ef5350');
   }
   setGoalsView(selectedGoalsView);
   renderLog(log);
