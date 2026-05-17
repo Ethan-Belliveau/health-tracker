@@ -1,4 +1,4 @@
-const CACHE = 'health-tracker-v1';
+const CACHE = 'health-tracker-v2';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -14,9 +14,42 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
+  e.respondWith(caches.match(e.request).then(cached => cached || fetch(e.request)));
+});
+
+/* True background push — fired by Vercel cron via web-push */
+self.addEventListener('push', e => {
+  let data = {};
+  try { data = e.data.json(); } catch {}
+  const title = data.title || "Log your day 💪";
+  const body  = data.body  || "Tap to record tonight's distance, sleep and workout.";
+  e.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      tag:  'daily-reminder',
+      icon: '/icon-192.png',
+      badge:'/icon-192.png',
+      requireInteraction: false
+    })
   );
+});
+
+/* Fallback SW timer — fires when app was recently opened */
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SCHEDULE') {
+    const ms = e.data.ms;
+    if (ms > 0 && ms < 86400000) {
+      setTimeout(() => {
+        self.registration.showNotification("Log your day 💪", {
+          body: e.data.body || "Tap to record tonight's log.",
+          tag:  'daily-reminder',
+          icon: '/icon-192.png',
+          badge:'/icon-192.png',
+          requireInteraction: false
+        });
+      }, ms);
+    }
+  }
 });
 
 self.addEventListener('notificationclick', e => {
@@ -27,21 +60,4 @@ self.addEventListener('notificationclick', e => {
       return clients.openWindow('/');
     })
   );
-});
-
-self.addEventListener('message', e => {
-  if (e.data?.type === 'SCHEDULE') {
-    const ms = e.data.ms;
-    if (ms > 0 && ms < 86400000) {
-      setTimeout(() => {
-        self.registration.showNotification("Log your day 💪", {
-          body: e.data.body || "Tap to record your distance, sleep and workout.",
-          tag: 'daily-reminder',
-          icon: '/icon-192.png',
-          badge: '/icon-192.png',
-          requireInteraction: false
-        });
-      }, ms);
-    }
-  }
 });
