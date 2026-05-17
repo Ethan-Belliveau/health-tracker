@@ -29,6 +29,7 @@ export default async function handler(req, res) {
         plan: { weekFocus: {}, days: {} },
         metrics: {},
         mealCart: {},
+        customMeals: [],
         groceryChecked: [],
         updatedAt: legacy.syncedAt || null
       },

@@ -55,6 +55,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .slabel { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 10px; margin-top: 20px; }
 .slabel:first-child { margin-top: 0; }
 .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+.completed-card { display: none; background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+.completed-card.show { display: block; }
+.completed-title { font-size: 15px; font-weight: 600; }
+.completed-meta { color: var(--muted); font-size: 12px; margin-top: 3px; }
+.completed-edit { margin-top: 10px; padding: 8px 12px; border: 0.5px solid var(--border); border-radius: 8px; background: var(--bg); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.log-card.is-complete { display: none; }
 
 /* Stats */
 .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
@@ -116,6 +122,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .meal-form.show { display: block; }
 .meal-form input { width: 100%; padding: 8px 10px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; background: var(--surface); outline: none; margin-bottom: 10px; }
 .meal-form input:focus { border-color: var(--blue-mid); }
+.meal-kind-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+.meal-kind-btn { padding: 8px 4px; border: 0.5px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
+.meal-kind-btn.sel { background: var(--blue-bg); border-color: var(--blue-mid); color: var(--blue); }
+.cal-row { display: grid; grid-template-columns: 1fr 78px; gap: 10px; align-items: center; margin-bottom: 10px; }
+.cal-row input[type=range] { width: 100%; accent-color: var(--blue-mid); }
+.cal-row input[type=number] { margin-bottom: 0; text-align: center; font-weight: 600; }
+.meal-form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.meal-secondary-btn { padding: 10px; border: 0.5px solid var(--border); background: var(--surface); color: var(--muted); border-radius: 8px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.meal-skip-btn { width: 100%; padding: 9px; border: 0.5px solid var(--border); background: var(--amber-bg); color: var(--amber); border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .chip-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
 .chip { padding: 6px 10px; border: 0.5px solid var(--border); border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; background: var(--bg); font-family: inherit; }
 .chip.sel { background: var(--blue-bg); border-color: var(--blue-mid); color: var(--blue); font-weight: 600; }
@@ -128,6 +143,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 
 /* Goals */
 .goals-list { display: flex; flex-direction: column; gap: 10px; }
+.goals-list.goals-actual .goal-progress { display: none; }
+.goals-list.goals-progress .goal-actual { display: none; }
 .goal-row { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; }
 .goal-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
 .goal-name { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding-top: 5px; }
@@ -234,6 +251,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .meal-lib-cat:first-child { margin-top: 0; }
 .meal-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; margin-bottom: 6px; overflow: hidden; }
 .meal-card-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; -webkit-user-select: none; user-select: none; }
+.meal-thumb { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; object-fit: cover; background: var(--bg); }
 .meal-card-info { flex: 1; min-width: 0; }
 .meal-card-name { font-size: 14px; font-weight: 500; display: block; }
 .meal-card-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
@@ -259,6 +277,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .grocery-item.done .gi-name, .grocery-item.done .gi-amt { text-decoration: line-through; color: var(--subtle); }
 .gi-name { flex: 1; font-size: 13px; }
 .gi-amt { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+.custom-meal-form { display: none; background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.custom-meal-form.show { display: block; }
+.custom-meal-form input, .custom-meal-form textarea { width: 100%; padding: 9px 10px; border: 0.5px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; font-size: 13px; margin-bottom: 8px; }
+.custom-meal-form textarea { resize: vertical; min-height: 82px; }
+.meal-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+.meal-toolbar .meal-search { margin-bottom: 0; }
+.manual-meal-btn { padding: 10px 12px; border: 0.5px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--blue-mid); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.swipe-wrap { position: relative; overflow: hidden; border-radius: 10px; }
+.swipe-content { position: relative; z-index: 1; background: var(--surface); transition: transform 0.18s ease; touch-action: pan-y; }
+.swipe-wrap.open .swipe-content { transform: translateX(-72px); }
+.swipe-delete { position: absolute; top: 0; right: 0; bottom: 0; width: 72px; border: none; background: var(--red); color: #fff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.goal-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 12px; }
+.goal-tab { padding: 10px; border: 0.5px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.goal-tab.sel { background: var(--text); color: #fff; border-color: var(--text); }
+.goal-panel { display: none; }
+.goal-panel.show { display: block; }
+.history-actions { display: flex; justify-content: flex-end; margin: 18px 0 8px; }
+.history-add-btn { padding: 8px 12px; border: 0.5px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--blue-mid); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 
 /* 5-tab nav */
 .nav-btn { padding: 8px 2px 6px; }
@@ -298,7 +334,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
     </div>
 
     <div class="slabel">Log tonight</div>
-    <div class="card">
+    <div class="completed-card" id="todayComplete">
+      <div class="completed-title">Today is logged</div>
+      <div class="completed-meta" id="todayCompleteMeta"></div>
+      <button class="completed-edit" onclick="editTodayEntry()">Edit entry</button>
+    </div>
+    <div class="card log-card" id="logCard">
 
       <div class="field-row">
         <div class="field">
@@ -348,11 +389,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div class="vibe-block">
           <label>Mood</label>
           <div class="mood-row" id="moodRow">
-            <button class="mood-btn" data-m="1">😞</button>
-            <button class="mood-btn" data-m="2">😐</button>
-            <button class="mood-btn" data-m="3">🙂</button>
-            <button class="mood-btn" data-m="4">😊</button>
-            <button class="mood-btn" data-m="5">🤩</button>
+            <button class="mood-btn" data-m="1">1</button>
+            <button class="mood-btn" data-m="2">2</button>
+            <button class="mood-btn" data-m="3">3</button>
+            <button class="mood-btn" data-m="4">4</button>
+            <button class="mood-btn" data-m="5">5</button>
           </div>
         </div>
       </div>
@@ -387,21 +428,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
       <div id="mealList"></div>
       <div class="meal-form" id="mealForm">
-        <input type="text" id="mealName" placeholder="Meal name (optional — e.g. Lunch)" maxlength="40">
-        <div class="chip-row">
-          <button class="chip" data-kcal="200"  onclick="selKcal(this)">~200</button>
-          <button class="chip" data-kcal="400"  onclick="selKcal(this)">~400</button>
-          <button class="chip" data-kcal="600"  onclick="selKcal(this)">~600</button>
-          <button class="chip" data-kcal="800"  onclick="selKcal(this)">~800</button>
-          <button class="chip" data-kcal="1000" onclick="selKcal(this)">~1000</button>
-          <button class="chip" data-kcal="1300" onclick="selKcal(this)">1300+</button>
+        <div class="meal-kind-row" id="mealKindRow">
+          <button class="meal-kind-btn" data-kind="Breakfast" onclick="selMealKind(this)">Breakfast</button>
+          <button class="meal-kind-btn" data-kind="Lunch" onclick="selMealKind(this)">Lunch</button>
+          <button class="meal-kind-btn" data-kind="Dinner" onclick="selMealKind(this)">Dinner</button>
+          <button class="meal-kind-btn" data-kind="Snack" onclick="selMealKind(this)">Snack</button>
+        </div>
+        <input type="text" id="mealName" placeholder="Meal name or note" maxlength="40">
+        <div class="cal-row">
+          <input type="range" id="mealKcalRange" min="0" max="1600" step="25" value="500" oninput="setMealKcal(this.value)">
+          <input type="number" id="mealKcalInput" min="0" max="3000" step="25" value="500" inputmode="numeric" oninput="setMealKcal(this.value)">
         </div>
         <div class="q-chip-row">
-          <button class="q-chip" data-q="Clean" onclick="selQ(this)">🥗 Clean</button>
-          <button class="q-chip" data-q="Mixed" onclick="selQ(this)">🍱 Mixed</button>
-          <button class="q-chip" data-q="Junk"  onclick="selQ(this)">🍟 Junk</button>
+          <button class="q-chip" data-q="Clean" onclick="selQ(this)">Clean</button>
+          <button class="q-chip" data-q="Mixed" onclick="selQ(this)">Mixed</button>
+          <button class="q-chip" data-q="Junk"  onclick="selQ(this)">Junk</button>
         </div>
-        <button class="meal-add-btn" onclick="addMeal()">Add meal</button>
+        <button class="meal-skip-btn" onclick="skipMeal()">Mark selected meal skipped</button>
+        <div class="meal-form-actions">
+          <button class="meal-secondary-btn" onclick="closeMealForm()">Cancel</button>
+          <button class="meal-add-btn" onclick="addMeal()">Add meal</button>
+        </div>
       </div>
 
       <button class="save-btn" id="saveBtn" onclick="saveCheckin()" style="margin-top:14px;">Save tonight's log</button>
@@ -439,8 +486,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div id="groceryList"></div>
       </div>
 
+      <div class="custom-meal-form" id="customMealForm">
+        <input id="customMealName" placeholder="Meal name">
+        <input id="customMealKcal" type="number" placeholder="Calories" inputmode="numeric">
+        <input id="customMealTime" placeholder="Prep time, e.g. 10 min">
+        <textarea id="customMealIngredients" placeholder="Ingredients, one per line. Example: 2 eggs"></textarea>
+        <textarea id="customMealRecipe" placeholder="Recipe steps, one per line"></textarea>
+        <div class="meal-form-actions">
+          <button class="meal-secondary-btn" onclick="toggleCustomMealForm(false)">Cancel</button>
+          <button class="meal-add-btn" onclick="saveCustomMeal()">Save meal</button>
+        </div>
+      </div>
       <div class="meal-filter-bar" id="mealFilters"></div>
-      <input class="meal-search" id="mealSearch" placeholder="Search meals or ingredients" oninput="renderMealLibrary()">
+      <div class="meal-toolbar">
+        <input class="meal-search" id="mealSearch" placeholder="Search meals or ingredients" oninput="renderMealLibrary()">
+        <button class="manual-meal-btn" onclick="toggleCustomMealForm(true)">Manual</button>
+      </div>
       <div id="mealLibrary"></div>
     </div>
   </div>
@@ -493,11 +554,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
     </div>
 
+    <div class="goal-tabs">
+      <button class="goal-tab sel" id="goalTabActual" onclick="setGoalsView('actual')">Goals</button>
+      <button class="goal-tab" id="goalTabProgress" onclick="setGoalsView('progress')">Daily progress</button>
+    </div>
+
     <div class="slabel">12-week targets</div>
-    <div class="goals-list">
+    <div class="goals-list goals-actual" id="goalsList">
 
       <!-- Weight -->
-      <div class="goal-row">
+      <div class="goal-row goal-actual">
         <div class="goal-top">
           <span class="goal-name">Weight</span>
           <div class="goal-right">
@@ -513,7 +579,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
 
       <!-- Body fat -->
-      <div class="goal-row">
+      <div class="goal-row goal-actual">
         <div class="goal-top">
           <span class="goal-name">Body fat</span>
           <div class="goal-right">
@@ -531,7 +597,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
 
       <!-- VO2 Max -->
-      <div class="goal-row">
+      <div class="goal-row goal-actual">
         <div class="goal-top">
           <span class="goal-name">VO2 Max</span>
           <div class="goal-right">
@@ -548,7 +614,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
 
       <!-- Resting HR -->
-      <div class="goal-row">
+      <div class="goal-row goal-actual">
         <div class="goal-top">
           <span class="goal-name">Resting HR</span>
           <div class="goal-right">
@@ -566,7 +632,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
 
       <!-- HRV -->
-      <div class="goal-row">
+      <div class="goal-row goal-actual">
         <div class="goal-top">
           <span class="goal-name">HRV</span>
           <div class="goal-right">
@@ -584,7 +650,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
 
       <!-- Daily distance -->
-      <div class="goal-row">
+      <div class="goal-row goal-progress">
         <div class="goal-top">
           <span class="goal-name">Daily distance</span>
           <div class="goal-right">
@@ -602,7 +668,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
 
       <!-- Sleep -->
-      <div class="goal-row">
+      <div class="goal-row goal-progress">
         <div class="goal-top">
           <span class="goal-name">Sleep</span>
           <div class="goal-right">
@@ -619,6 +685,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div class="goal-sub" id="gs-sleep">Earlier bedtime = better HRV &amp; recovery</div>
       </div>
 
+      <!-- Calories -->
+      <div class="goal-row goal-progress">
+        <div class="goal-top">
+          <span class="goal-name">Calories</span>
+          <div class="goal-right">
+            <div><span class="goal-cur ca" id="g-cal-cur">0</span><span class="goal-unit">kcal avg</span></div>
+            <div class="goal-tgt-label">target ? steady deficit</div>
+          </div>
+        </div>
+        <div class="zone-track" style="background:linear-gradient(to right,#3b8c10 0%,#8bc34a 45%,#EF9F27 75%,#ef5350 100%)">
+          <div class="zone-marker" id="zm-cal"></div>
+          <div class="zone-target-line" style="left:56%"></div>
+        </div>
+        <div class="zone-labels"><span>low</span><span>2200</span><span>2800+</span></div>
+        <div class="goal-sub" id="gs-cal">7-day average from food logs</div>
+      </div>
+
     </div>
 
     <div class="slabel" style="margin-top:24px;">Milestones</div>
@@ -631,7 +714,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 
   <!-- ═══ HISTORY ═══ -->
   <div class="page" id="page-history">
-    <div class="slabel" style="margin-top:16px;">Distance (last 14 days)</div>
+    <div class="history-actions">
+      <button class="history-add-btn" onclick="addMissedEntry()">Add missed day</button>
+    </div>
+    <div class="slabel" style="margin-top:8px;">Distance (last 14 days)</div>
     <div class="chart-wrap">
       <div class="chart-header">
         <span class="chart-title">Daily km</span>
@@ -646,7 +732,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
     </div>
     <div class="slabel" style="margin-top:20px;">Log</div>
     <div class="card" style="padding:0 16px;" id="logContainer">
-      <div class="empty"><div class="empty-icon">📋</div>No entries yet.<br>Log your first evening on the Today tab.</div>
+      <div class="empty"><div class="empty-icon"></div>No entries yet.<br>Log your first evening on the Today tab.</div>
     </div>
   </div>
 
@@ -662,7 +748,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
     Plan
   </button>
   <button class="nav-btn" onclick="showPage('meals',this)">
-    <svg viewBox="0 0 24 24"><path d="M4 3v8a4 4 0 008 0V3"/><path d="M8 3v18"/><path d="M19 3v18"/><path d="M15 3h4a1 1 0 011 1v7a4 4 0 01-4 4h-1"/></svg>
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M4 4l4 4"/><path d="M20 4l-4 4"/></svg>
     Meals
   </button>
   <button class="nav-btn" onclick="showPage('goals',this)">
@@ -684,10 +770,11 @@ const METRICS_KEY  = 'ethan_metrics';
 const NOTIF_KEY    = 'ethan_notif';
 const CART_KEY     = 'ethan_meal_cart';
 const GROCERY_KEY  = 'ethan_grocery_checked';
+const CUSTOM_MEALS_KEY = 'ethan_custom_meals';
 const BACKUP_KEY   = 'ethan_backup_meta';
 const START        = new Date('2026-05-17'); // Sunday
 const TOTAL_WEEKS  = 12;
-const MOOD_EMOJI   = ['','😞','😐','🙂','😊','🤩'];
+const MOOD_EMOJI = ['', 'Very low', 'Low', 'Okay', 'Good', 'Great'];
 
 /* ══ State ══ */
 let selectedWorkouts = new Set();   // empty = rest day
@@ -703,6 +790,9 @@ let selectedMealFilter = 'All';
 let expandedMealId = null;
 let backupTimer = null;
 let restoringBackup = false;
+let selectedLogDate = null;
+let editingToday = false;
+let selectedGoalsView = 'actual';
 
 /* ══ Storage (with v2→v3 migration) ══ */
 function getLog() {
@@ -728,12 +818,14 @@ function getMetrics() { try { return JSON.parse(localStorage.getItem(METRICS_KEY
 function setMetrics(m) { localStorage.setItem(METRICS_KEY, JSON.stringify(m)); markLocalChange(); }
 function getMealCart() { try { return JSON.parse(localStorage.getItem(CART_KEY)||'{}'); } catch { return {}; } }
 function setMealCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); markLocalChange(); }
+function getCustomMeals() { try { return JSON.parse(localStorage.getItem(CUSTOM_MEALS_KEY)||'[]'); } catch { return []; } }
+function setCustomMeals(v) { localStorage.setItem(CUSTOM_MEALS_KEY, JSON.stringify(v)); markLocalChange(); }
 function getGroceryChecked() { try { return JSON.parse(localStorage.getItem(GROCERY_KEY)||'[]'); } catch { return []; } }
 function setGroceryChecked(v) { localStorage.setItem(GROCERY_KEY, JSON.stringify(v)); markLocalChange(); }
 function backupMeta() { try { return JSON.parse(localStorage.getItem(BACKUP_KEY)||'{}'); } catch { return {}; } }
 function setBackupStatus(msg) { const el=document.getElementById('backupStatus'); if(el) el.textContent=msg; }
 function appState() {
-  return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), groceryChecked:getGroceryChecked(), updatedAt:backupMeta().updatedAt||null };
+  return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), customMeals:getCustomMeals(), groceryChecked:getGroceryChecked(), updatedAt:backupMeta().updatedAt||null };
 }
 function writeAppState(state) {
   restoringBackup = true;
@@ -741,13 +833,14 @@ function writeAppState(state) {
   if(state.plan) localStorage.setItem(PLAN_KEY, JSON.stringify(state.plan));
   if(state.metrics) localStorage.setItem(METRICS_KEY, JSON.stringify(state.metrics));
   if(state.mealCart) localStorage.setItem(CART_KEY, JSON.stringify(state.mealCart));
+  if(Array.isArray(state.customMeals)) localStorage.setItem(CUSTOM_MEALS_KEY, JSON.stringify(state.customMeals));
   if(Array.isArray(state.groceryChecked)) localStorage.setItem(GROCERY_KEY, JSON.stringify(state.groceryChecked));
   localStorage.setItem(BACKUP_KEY, JSON.stringify({updatedAt:state.updatedAt||new Date().toISOString(), syncedAt:state.updatedAt||null}));
   restoringBackup = false;
 }
 function hasLocalData() {
   const s=appState();
-  return s.log.length || Object.keys(s.plan.weekFocus||{}).length || Object.keys(s.plan.days||{}).length || Object.keys(s.metrics||{}).length || Object.keys(s.mealCart||{}).length;
+  return s.log.length || Object.keys(s.plan.weekFocus||{}).length || Object.keys(s.plan.days||{}).length || Object.keys(s.metrics||{}).length || Object.keys(s.mealCart||{}).length || s.customMeals.length;
 }
 function markLocalChange() {
   if(restoringBackup) return;
@@ -820,7 +913,7 @@ async function subscribePush() {
     const reg = await navigator.serviceWorker.ready;
     const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64toU8(vapidKey)});
     await fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sub.toJSON())});
-    showToast('9pm reminders on — even when app is closed!');
+    showToast('9pm reminders on');
   } catch { scheduleReminder(); showToast('Reminders set (keep app recently open).'); }
 }
 function notifGranted() { return Notification?.permission==='granted'; }
@@ -840,7 +933,7 @@ function scheduleReminder() {
     if (!reg.active) return;
     const now=new Date(), next=new Date(now);
     next.setHours(21,0,0,0); if(next<=now) next.setDate(next.getDate()+1);
-    reg.active.postMessage({type:'SCHEDULE',ms:next-now,body:getLog().some(e=>e.date===today())?'Already logged — great work! 💪':'Time to log your evening.'});
+    reg.active.postMessage({type:'SCHEDULE',ms:next-now,body:getLog().some(e=>e.date===today())?'Already logged - great work!':'Time to log your evening.'});
   });
 }
 
@@ -933,12 +1026,15 @@ function adj(f,d) {
 
 /* ══ Food log ══ */
 const MEAL_DEFAULTS = ['Breakfast','Lunch','Dinner','Snack'];
+let mealKind = 'Breakfast';
+function nextMealKind(){ return MEAL_DEFAULTS[Math.min(currentMeals.filter(m=>!m.skipped).length, 3)]; }
 function openMealForm() {
   const f=document.getElementById('mealForm'); f.classList.add('show');
-  mealKcal=null; mealQ=null;
-  document.getElementById('mealName').value = MEAL_DEFAULTS[Math.min(currentMeals.length, 3)];
-  document.querySelectorAll('.chip,.q-chip').forEach(c=>c.classList.remove('sel'));
+  mealKind=nextMealKind(); mealQ='Clean'; setMealKcal(500);
+  document.getElementById('mealName').value = '';
   document.getElementById('addMealToggleBtn').textContent = 'Done';
+  renderMealKindBtns();
+  document.querySelectorAll('.q-chip').forEach(c=>c.classList.toggle('sel', c.dataset.q===mealQ));
   document.getElementById('mealName').focus();
 }
 function closeMealForm() {
@@ -948,21 +1044,42 @@ function closeMealForm() {
 function toggleMealForm() {
   document.getElementById('mealForm').classList.contains('show') ? closeMealForm() : openMealForm();
 }
-function selKcal(el){ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealKcal=+el.dataset.kcal; }
-function selQ(el)   { document.querySelectorAll('.q-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealQ=el.dataset.q; }
+function selMealKind(el){ mealKind=el.dataset.kind; renderMealKindBtns(); }
+function renderMealKindBtns(){ document.querySelectorAll('.meal-kind-btn').forEach(b=>b.classList.toggle('sel', b.dataset.kind===mealKind)); }
+function setMealKcal(v){
+  mealKcal = Math.max(0, Math.min(3000, parseInt(v,10)||0));
+  const range=document.getElementById('mealKcalRange'), input=document.getElementById('mealKcalInput');
+  if(range) range.value=Math.min(1600, mealKcal);
+  if(input) input.value=mealKcal;
+}
+function selKcal(el){ setMealKcal(el.dataset.kcal); }
+function selQ(el) { document.querySelectorAll('.q-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealQ=el.dataset.q; }
 function addMeal() {
-  if(!mealKcal){ showToast('Pick a calorie amount'); return; }
-  if(!mealQ)   { showToast('Pick a quality'); return; }
-  currentMeals.push({name:document.getElementById('mealName').value.trim()||(MEAL_DEFAULTS[Math.min(currentMeals.length,3)]),kcal:mealKcal,quality:mealQ});
+  if(!mealQ) mealQ='Clean';
+  const name=document.getElementById('mealName').value.trim() || mealKind;
+  currentMeals.push({name,kcal:mealKcal||0,quality:mealQ,kind:mealKind,skipped:false});
   renderMeals();
-  openMealForm(); // reset and stay open for next meal
+  closeMealForm();
+}
+function skipMeal() {
+  currentMeals.push({name:mealKind,kcal:0,quality:'Clean',kind:mealKind,skipped:true});
+  renderMeals();
+  closeMealForm();
 }
 function removeMeal(i){ currentMeals.splice(i,1); renderMeals(); }
 function renderMeals(list) {
   const m=list!==undefined?list:currentMeals, el=document.getElementById('mealList');
   if(!m.length){ el.innerHTML=''; document.getElementById('foodTotal').textContent=''; return; }
-  document.getElementById('foodTotal').textContent='~'+m.reduce((s,x)=>s+x.kcal,0).toLocaleString()+' kcal';
-  el.innerHTML=m.map((x,i)=>`<div class="meal-item"><span class="meal-name">${esc(x.name)}</span><span class="meal-kcal">~${x.kcal}</span><span class="meal-q q-${x.quality.toLowerCase()}">${x.quality}</span>${list===undefined?`<button class="meal-del" onclick="removeMeal(${i})">×</button>`:''}</div>`).join('');
+  const eaten=m.filter(x=>!x.skipped);
+  document.getElementById('foodTotal').textContent=eaten.length?'~'+eaten.reduce((s,x)=>s+(x.kcal||0),0).toLocaleString()+' kcal':'';
+  el.innerHTML=m.map((x,i)=>{
+    const label=x.skipped?esc(x.name)+' skipped':esc(x.name);
+    const kcal=x.skipped?'Skipped':'~'+(x.kcal||0);
+    const q=(x.quality||'Clean').toLowerCase();
+    const row='<div class="meal-item"><span class="meal-name">'+label+'</span><span class="meal-kcal">'+kcal+'</span><span class="meal-q q-'+q+'">'+esc(x.quality||'Clean')+'</span></div>';
+    return list===undefined?'<div class="swipe-wrap" data-swipe><button class="swipe-delete" onclick="removeMeal('+i+')">Delete</button><div class="swipe-content">'+row+'</div></div>':row;
+  }).join('');
+  setupSwipeDeletes();
 }
 
 /* Meal planner */
@@ -999,114 +1116,81 @@ const MEAL_LIBRARY = [
   {id:'curry-chickpeas',cat:'Dinner',name:'Chickpea spinach curry',kcal:620,time:'25 min',ingredients:[i('chickpeas',1,'cup'),i('spinach',2,'cup'),i('light coconut milk',0.5,'cup'),i('brown rice',0.75,'cup'),i('curry powder',2,'tsp')],recipe:['Simmer chickpeas with coconut milk and curry powder.','Stir in spinach.','Serve over rice.']}
 ];
 function i(item, amount, unit){ return {item, amount, unit}; }
-function mealById(id){ return MEAL_LIBRARY.find(m=>m.id===id); }
-function mealFilters(){ return ['All',...new Set(MEAL_LIBRARY.map(m=>m.cat))]; }
+const CATEGORY_ORDER = ['Easy','Breakfast','Lunch','Dinner','Snack','Batch','Custom'];
+const MEAL_IMAGES = {
+  Breakfast:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=128&q=70',
+  Lunch:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=128&q=70',
+  Dinner:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=128&q=70',
+  Snack:'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=128&q=70',
+  Batch:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=128&q=70',
+  Easy:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=128&q=70',
+  Custom:'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=128&q=70'
+};
+const EASY_MEALS = [
+  {id:'easy-rotisserie-wrap',cat:'Easy',name:'Rotisserie chicken wrap',kcal:520,time:'5 min',ingredients:[i('rotisserie chicken',5,'oz'),i('whole wheat tortilla',1,'piece'),i('mixed greens',1,'cup'),i('hummus',2,'tbsp')],recipe:['Add chicken, greens, and hummus to tortilla.','Roll tightly and slice.']},
+  {id:'easy-tuna-rice',cat:'Easy',name:'Tuna microwave rice bowl',kcal:560,time:'4 min',ingredients:[i('microwave rice',1,'pack'),i('canned tuna',1,'can'),i('salsa',3,'tbsp'),i('mixed greens',1,'cup')],recipe:['Heat rice.','Top with tuna, salsa, and greens.']},
+  {id:'easy-cottage-toast',cat:'Easy',name:'Cottage cheese toast',kcal:390,time:'4 min',ingredients:[i('whole grain bread',2,'slice'),i('cottage cheese',0.75,'cup'),i('tomatoes',0.5,'cup'),i('black pepper',0.25,'tsp')],recipe:['Toast bread.','Top with cottage cheese, tomatoes, and pepper.']},
+  {id:'easy-chicken-salad-kit',cat:'Easy',name:'Chicken salad kit',kcal:610,time:'5 min',ingredients:[i('salad kit',1,'bag'),i('cooked chicken breast',6,'oz'),i('avocado',0.5,'piece')],recipe:['Mix salad kit.','Top with chicken and avocado.']}
+];
+function allMeals(){ return [...EASY_MEALS,...MEAL_LIBRARY,...getCustomMeals()].sort((a,b)=>CATEGORY_ORDER.indexOf(a.cat)-CATEGORY_ORDER.indexOf(b.cat)||a.name.localeCompare(b.name)); }
+function mealById(id){ return allMeals().find(m=>m.id===id); }
+function mealFilters(){ return ['All',...CATEGORY_ORDER.filter(c=>allMeals().some(m=>m.cat===c))]; }
+function mealImage(m){ return m.image || MEAL_IMAGES[m.cat] || MEAL_IMAGES.Custom; }
 function setMealFilter(cat){ selectedMealFilter=cat; renderMealPlanner(); }
-function addMealToCart(id, delta=1) {
-  const cart=getMealCart();
-  cart[id]=Math.max(0,(cart[id]||0)+delta);
-  if(!cart[id]) delete cart[id];
-  setMealCart(cart);
-  renderMealPlanner();
-}
-function clearMealCart(){
-  setMealCart({});
-  setGroceryChecked([]);
-  document.getElementById('groceryWrap').classList.remove('show');
-  renderMealPlanner();
-}
-function toggleMealDetails(id){
-  expandedMealId = expandedMealId===id ? null : id;
-  renderMealLibrary();
-}
-function renderMealPlanner(){
-  renderMealFilters();
-  renderMealCart();
-  renderMealLibrary();
-  if(document.getElementById('groceryWrap')?.classList.contains('show')) renderGroceryList(false);
-}
-function renderMealFilters(){
-  const el=document.getElementById('mealFilters'); if(!el) return;
-  el.innerHTML=mealFilters().map(cat=>`<button class="meal-filter-btn${cat===selectedMealFilter?' sel':''}" onclick="setMealFilter('${cat}')">${cat}</button>`).join('');
-}
+function addMealToCart(id, delta=1) { const cart=getMealCart(); cart[id]=Math.max(0,(cart[id]||0)+delta); if(!cart[id]) delete cart[id]; setMealCart(cart); renderMealPlanner(); }
+function removeMealFromCart(id){ const cart=getMealCart(); delete cart[id]; setMealCart(cart); renderMealPlanner(); }
+function clearMealCart(){ setMealCart({}); setGroceryChecked([]); document.getElementById('groceryWrap').classList.remove('show'); renderMealPlanner(); }
+function toggleMealDetails(id){ expandedMealId = expandedMealId===id ? null : id; renderMealLibrary(); }
+function renderMealPlanner(){ renderMealFilters(); renderMealCart(); renderMealLibrary(); if(document.getElementById('groceryWrap')?.classList.contains('show')) renderGroceryList(false); }
+function renderMealFilters(){ const el=document.getElementById('mealFilters'); if(!el) return; el.innerHTML=mealFilters().map(cat=>'<button class="meal-filter-btn'+(cat===selectedMealFilter?' sel':'')+'" onclick="setMealFilter(\''+cat+'\')">'+cat+'</button>').join(''); }
 function renderMealCart(){
-  const cart=getMealCart(), ids=Object.keys(cart), summary=document.getElementById('mealCartSummary'), items=document.getElementById('mealCartItems');
-  if(!summary || !items) return;
-  const total=ids.reduce((s,id)=>s+(mealById(id)?.kcal||0)*(cart[id]||0),0);
-  const count=ids.reduce((s,id)=>s+(cart[id]||0),0);
-  summary.textContent=count?`${count} meal${count===1?'':'s'} selected - ~${total.toLocaleString()} kcal total`:'No meals selected';
-  items.innerHTML=ids.map(id=>{
-    const meal=mealById(id); if(!meal) return '';
-    return `<div class="cart-item"><span class="cart-item-name">${esc(meal.name)}</span><span class="cart-item-kcal">~${meal.kcal*cart[id]}</span><span class="cart-stepper"><button onclick="addMealToCart('${id}',-1)">-</button><span>${cart[id]}</span><button onclick="addMealToCart('${id}',1)">+</button></span></div>`;
-  }).join('');
+  const cart=getMealCart(), ids=Object.keys(cart), summary=document.getElementById('mealCartSummary'), items=document.getElementById('mealCartItems'); if(!summary || !items) return;
+  const total=ids.reduce((sum,id)=>sum+(mealById(id)?.kcal||0)*(cart[id]||0),0), count=ids.reduce((sum,id)=>sum+(cart[id]||0),0);
+  summary.textContent=count?count+' meal'+(count===1?'':'s')+' selected - ~'+total.toLocaleString()+' kcal total':'No meals selected';
+  items.innerHTML=ids.map(id=>{ const meal=mealById(id); if(!meal) return ''; const row='<div class="cart-item"><span class="cart-item-name">'+esc(meal.name)+'</span><span class="cart-item-kcal">~'+(meal.kcal*cart[id])+'</span><span class="cart-stepper"><button onclick="addMealToCart(\''+id+'\',-1)">-</button><span>'+cart[id]+'</span><button onclick="addMealToCart(\''+id+'\',1)">+</button></span></div>'; return '<div class="swipe-wrap" data-swipe><button class="swipe-delete" onclick="removeMealFromCart(\''+id+'\')">Delete</button><div class="swipe-content">'+row+'</div></div>'; }).join(''); setupSwipeDeletes();
 }
 function renderMealLibrary(){
-  const el=document.getElementById('mealLibrary'); if(!el) return;
-  const cart=getMealCart(), q=(document.getElementById('mealSearch')?.value||'').trim().toLowerCase();
-  const meals=MEAL_LIBRARY.filter(m=>(selectedMealFilter==='All'||m.cat===selectedMealFilter) && (!q || (m.name+' '+m.cat+' '+m.ingredients.map(x=>x.item).join(' ')).toLowerCase().includes(q)));
-  let lastCat='';
-  el.innerHTML=meals.map(m=>{
-    const catHead=selectedMealFilter==='All'&&m.cat!==lastCat?`<div class="meal-lib-cat">${m.cat}</div>`:'';
-    lastCat=m.cat;
-    const expanded=expandedMealId===m.id;
-    const qty=cart[m.id]||0;
-    const body=expanded?`<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">${m.ingredients.map(x=>`<div class="meal-ing-row"><span class="meal-ing-name">${esc(x.item)}</span><span class="meal-ing-amt">${fmtAmt(x.amount)} ${esc(x.unit)}</span></div>`).join('')}</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">${m.recipe.map(step=>`<li>${esc(step)}</li>`).join('')}</ol></div>`:'';
-    return `${catHead}<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails('${m.id}')"><div class="meal-card-info"><span class="meal-card-name">${esc(m.name)}</span><div class="meal-card-meta">~${m.kcal} kcal - ${m.time} - ${m.ingredients.length} ingredients</div></div><button class="meal-add-btn${qty?' in-cart':''}" onclick="event.stopPropagation();addMealToCart('${m.id}',1)">${qty?qty+'x':'+'}</button></div>${body}</div>`;
-  }).join('') || '<div class="empty">No matching meals.</div>';
+  const el=document.getElementById('mealLibrary'); if(!el) return; const cart=getMealCart(), q=(document.getElementById('mealSearch')?.value||'').trim().toLowerCase();
+  const meals=allMeals().filter(m=>(selectedMealFilter==='All'||m.cat===selectedMealFilter) && (!q || (m.name+' '+m.cat+' '+m.ingredients.map(x=>x.item).join(' ')).toLowerCase().includes(q)));
+  const groups=meals.reduce((acc,m)=>{ (acc[m.cat] ||= []).push(m); return acc; },{}); const cats=(selectedMealFilter==='All'?CATEGORY_ORDER:[selectedMealFilter]).filter(c=>groups[c]?.length);
+  el.innerHTML=cats.map(cat=>'<div class="meal-lib-cat">'+cat+'</div>'+groups[cat].map(m=>renderMealCard(m, cart)).join('')).join('') || '<div class="empty">No matching meals.</div>';
+}
+function renderMealCard(m, cart){
+  const expanded=expandedMealId===m.id, qty=cart[m.id]||0;
+  const body=expanded?'<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">'+m.ingredients.map(x=>'<div class="meal-ing-row"><span class="meal-ing-name">'+esc(x.item)+'</span><span class="meal-ing-amt">'+fmtAmt(x.amount)+' '+esc(x.unit)+'</span></div>').join('')+'</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">'+m.recipe.map(step=>'<li>'+esc(step)+'</li>').join('')+'</ol></div>':'';
+  const controls=qty?'<span class="cart-stepper"><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',-1)">-</button><span>'+qty+'</span><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">+</button></span>':'<button class="meal-add-btn" onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">Add</button>';
+  return '<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt=""><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</div></div>'+controls+'</div>'+body+'</div>';
 }
 function fmtAmt(n){ return Number.isInteger(n)?String(n):String(Math.round(n*100)/100); }
-function groceryRows(){
-  const cart=getMealCart(), grouped={};
-  Object.keys(cart).forEach(id=>{
-    const meal=mealById(id); if(!meal) return;
-    meal.ingredients.forEach(x=>{
-      const key=(x.item+'|'+x.unit).toLowerCase();
-      if(!grouped[key]) grouped[key]={item:x.item,unit:x.unit,amount:0};
-      grouped[key].amount += x.amount * cart[id];
-    });
-  });
-  return Object.values(grouped).sort((a,b)=>a.item.localeCompare(b.item));
-}
-function renderGroceryList(show){
-  const wrap=document.getElementById('groceryWrap'), el=document.getElementById('groceryList'); if(!wrap||!el) return;
-  if(show) wrap.classList.add('show');
-  const checked=new Set(getGroceryChecked()), rows=groceryRows();
-  if(!rows.length){ el.innerHTML='<div class="empty">Select meals to build a grocery list.</div>'; return; }
-  el.innerHTML=rows.map(x=>{
-    const key=`${x.item}|${x.unit}`;
-    const done=checked.has(key);
-    return `<label class="grocery-item${done?' done':''}"><input type="checkbox" ${done?'checked':''} onchange="toggleGroceryItem('${esc(key)}',this.checked)"><span class="gi-name">${esc(x.item)}</span><span class="gi-amt">${fmtAmt(x.amount)} ${esc(x.unit)}</span></label>`;
-  }).join('');
-}
-function toggleGroceryItem(key, checked){
-  const set=new Set(getGroceryChecked());
-  checked ? set.add(key) : set.delete(key);
-  setGroceryChecked([...set]);
-  renderGroceryList(false);
-}
-function groceryText(){
-  return groceryRows().map(x=>`${fmtAmt(x.amount)} ${x.unit} ${x.item}`).join('\n');
-}
-async function copyGroceryList(){
-  const text=groceryText();
-  if(!text){ showToast('Select meals first'); return; }
-  try { await navigator.clipboard.writeText(text); showToast('Grocery list copied'); }
-  catch { showToast(text); }
-}
+function groceryRows(){ const cart=getMealCart(), grouped={}; Object.keys(cart).forEach(id=>{ const meal=mealById(id); if(!meal) return; meal.ingredients.forEach(x=>{ const key=(x.item+'|'+x.unit).toLowerCase(); if(!grouped[key]) grouped[key]={item:x.item,unit:x.unit,amount:0}; grouped[key].amount += x.amount * cart[id]; }); }); return Object.values(grouped).sort((a,b)=>a.item.localeCompare(b.item)); }
+function renderGroceryList(show){ const wrap=document.getElementById('groceryWrap'), el=document.getElementById('groceryList'); if(!wrap||!el) return; if(show) wrap.classList.add('show'); const checked=new Set(getGroceryChecked()), rows=groceryRows(); if(!rows.length){ el.innerHTML='<div class="empty">Select meals to build a grocery list.</div>'; return; } el.innerHTML=rows.map(x=>{ const key=x.item+'|'+x.unit, done=checked.has(key); return '<label class="grocery-item'+(done?' done':'')+'"><input type="checkbox" '+(done?'checked':'')+' onchange="toggleGroceryItem(\''+esc(key)+'\',this.checked)"><span class="gi-name">'+esc(x.item)+'</span><span class="gi-amt">'+fmtAmt(x.amount)+' '+esc(x.unit)+'</span></label>'; }).join(''); }
+function toggleGroceryItem(key, checked){ const set=new Set(getGroceryChecked()); checked ? set.add(key) : set.delete(key); setGroceryChecked([...set]); renderGroceryList(false); }
+function groceryText(){ return groceryRows().map(x=>fmtAmt(x.amount)+' '+x.unit+' '+x.item).join('\n'); }
+async function copyGroceryList(){ const text=groceryText(); if(!text){ showToast('Select meals first'); return; } try { await navigator.clipboard.writeText(text); showToast('Grocery list copied'); } catch { showToast(text); } }
+function toggleCustomMealForm(show){ document.getElementById('customMealForm').classList.toggle('show', show); }
+function saveCustomMeal(){ const name=document.getElementById('customMealName').value.trim(); if(!name){ showToast('Add a meal name'); return; } const ingredients=document.getElementById('customMealIngredients').value.split('\n').map(parseIngredient).filter(Boolean); const recipe=document.getElementById('customMealRecipe').value.split('\n').map(x=>x.trim()).filter(Boolean); const meal={id:'custom-'+Date.now(),cat:'Custom',name,kcal:parseInt(document.getElementById('customMealKcal').value,10)||0,time:document.getElementById('customMealTime').value.trim()||'manual',ingredients:ingredients.length?ingredients:[i('custom ingredients',1,'item')],recipe:recipe.length?recipe:['Prepare as preferred.']}; setCustomMeals([...getCustomMeals(), meal]); ['customMealName','customMealKcal','customMealTime','customMealIngredients','customMealRecipe'].forEach(id=>document.getElementById(id).value=''); toggleCustomMealForm(false); renderMealPlanner(); showToast('Meal saved'); }
+function parseIngredient(line){ const t=line.trim(); if(!t) return null; const m=t.match(/^(\d+(?:\.\d+)?)\s+([a-zA-Z]+)\s+(.+)$/); if(m) return i(m[3], parseFloat(m[1]), m[2]); return i(t, 1, 'item'); }
+function setupSwipeDeletes(){ document.querySelectorAll('[data-swipe]').forEach(w=>{ if(w.dataset.ready) return; w.dataset.ready='1'; let sx=0, dx=0; w.addEventListener('pointerdown',e=>{ sx=e.clientX; dx=0; }); w.addEventListener('pointermove',e=>{ dx=e.clientX-sx; if(dx<-30) w.classList.add('open'); if(dx>30) w.classList.remove('open'); }); }); }
 
-/* ══ Save check-in ══ */
+/* Save check-in */
 function saveCheckin() {
-  const entry={date:today(),dist:parseFloat(document.getElementById('f-dist').value)||0,sleep:parseFloat(document.getElementById('f-sleep').value)||0,weight:parseFloat(document.getElementById('f-weight').value)||null,workouts:[...selectedWorkouts],rating:currentRating||null,mood:currentMood||null,water:currentWater,alcohol:currentAlcohol,meals:[...currentMeals]};
+  const entry={date:selectedLogDate||today(),dist:parseFloat(document.getElementById('f-dist').value)||0,sleep:parseFloat(document.getElementById('f-sleep').value)||0,weight:parseFloat(document.getElementById('f-weight').value)||null,workouts:[...selectedWorkouts],rating:currentRating||null,mood:currentMood||null,water:currentWater,alcohol:currentAlcohol,meals:[...currentMeals]};
   const log=getLog(), idx=log.findIndex(e=>e.date===entry.date);
   if(idx>=0) log[idx]=entry; else log.unshift(entry);
+  log.sort((a,b)=>b.date.localeCompare(a.date));
   saveLog(log);
-  const btn=document.getElementById('saveBtn'); btn.textContent='Saved! 💪'; btn.classList.add('saved');
-  setTimeout(()=>{btn.textContent="Save tonight's log";btn.classList.remove('saved');},2000);
-  scheduleReminder(); render();
+  const btn=document.getElementById('saveBtn'); btn.textContent='Saved'; btn.classList.add('saved');
+  setTimeout(()=>{btn.textContent='Save log';btn.classList.remove('saved');},1600);
+  if(entry.date===today()) editingToday=false;
+  selectedLogDate=today();
+  scheduleReminder(); render(); updateTodayCompleteState();
 }
 
-function loadTodayEntry() {
-  const e=getLog().find(x=>x.date===today()); if(!e) return;
+function loadTodayEntry() { loadEntryForDate(today()); }
+function loadEntryForDate(date) {
+  resetLogForm(); selectedLogDate=date;
+  document.getElementById('saveBtn').textContent = date===today() ? "Save log" : "Save "+fmtDate(date);
+  const e=getLog().find(x=>x.date===date); if(!e) { updateTodayCompleteState(); return; }
   if(e.dist)   document.getElementById('f-dist').value  =e.dist;
   if(e.sleep)  document.getElementById('f-sleep').value =e.sleep;
   if(e.weight) document.getElementById('f-weight').value=e.weight;
@@ -1116,9 +1200,35 @@ function loadTodayEntry() {
   if(e.water)   {currentWater  =e.water;   document.getElementById('f-water').textContent  =fmtWater(currentWater);  }
   if(e.alcohol) {currentAlcohol=e.alcohol; document.getElementById('f-alcohol').textContent=currentAlcohol; }
   if(e.meals?.length){ currentMeals=[...e.meals]; renderMeals(); }
+  updateTodayCompleteState();
+}
+function resetLogForm(){
+  ['f-dist','f-sleep','f-weight'].forEach(id=>document.getElementById(id).value='');
+  loadWorkouts([]); currentRating=0; currentMood=0; currentWater=0; currentAlcohol=0; currentMeals=[];
+  document.getElementById('f-water').textContent=fmtWater(0);
+  document.getElementById('f-alcohol').textContent='0';
+  setRating(0,true); setMood(0,true); renderMeals(); closeMealForm();
+}
+function editTodayEntry(){ editingToday=true; selectedLogDate=today(); updateTodayCompleteState(); }
+function updateTodayCompleteState(){
+  const complete=document.getElementById('todayComplete'), card=document.getElementById('logCard'), meta=document.getElementById('todayCompleteMeta');
+  if(!complete||!card) return;
+  const e=getLog().find(x=>x.date===today());
+  const show=!!e && !editingToday && (selectedLogDate===today() || !selectedLogDate);
+  complete.classList.toggle('show', show);
+  card.classList.toggle('is-complete', show);
+  if(e&&meta){
+    const kcal=(e.meals||[]).filter(m=>!m.skipped).reduce((sum,m)=>sum+(m.kcal||0),0);
+    meta.textContent=[e.dist?e.dist.toFixed(1)+' km':null,e.sleep?e.sleep.toFixed(1)+'h sleep':null,kcal?kcal+' kcal':null].filter(Boolean).join(' ? ') || 'Entry saved';
+  }
+}
+function addMissedEntry(){
+  const date=prompt('Date to add, YYYY-MM-DD');
+  if(!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+  editingToday=true; loadEntryForDate(date); showPage('today', document.querySelector('.nav-btn'));
 }
 
-/* ══ Manual health metrics ══ */
+/* Manual health metrics */
 function toggleMetricsEdit() {
   const a=document.getElementById('metricsEditArea'); a.classList.toggle('show');
   if(a.classList.contains('show')){ const m=getMetrics(); if(m.vo2max)document.getElementById('me-vo2').value=m.vo2max; if(m.rhr)document.getElementById('me-rhr').value=m.rhr; if(m.hrv)document.getElementById('me-hrv').value=m.hrv; }
@@ -1134,7 +1244,7 @@ function renderMetrics() {
     const el=document.getElementById('mv-vo2'); el.textContent=m.vo2max.toFixed(1); el.style.color=m.vo2max>=41?'var(--green-mid)':m.vo2max>=35?'var(--amber)':'var(--red)';
     document.getElementById('g-vo2-cur').textContent=m.vo2max.toFixed(1);
     document.getElementById('g-vo2-cur').className='goal-cur '+(m.vo2max>=41?'cg':m.vo2max>=35?'ca':'cr');
-    document.getElementById('gs-vo2').textContent=m.vo2max>=41?'Goal reached! 🎉':m.vo2max>=38?'Getting there — keep up the cardio':'Below avg for age — cardio first';
+    document.getElementById('gs-vo2').textContent=m.vo2max>=41?'Goal reached':m.vo2max>=38?'Getting there - keep up the cardio':'Below avg for age - cardio first';
     setMarker('vo2', ((m.vo2max-30)/20)*100, m.vo2max>=41?'#639922':m.vo2max>=35?'#d4873a':'#ef5350');
   }
   if(m.rhr){
@@ -1149,6 +1259,14 @@ function renderMetrics() {
     document.getElementById('g-hrv-cur').className='goal-cur '+(m.hrv>=48?'cg':m.hrv>=40?'ca':'cr');
     setMarker('hrv', ((m.hrv-20)/40)*100, m.hrv>=48?'#639922':m.hrv>=40?'#d4873a':'#ef5350');
   }
+}
+
+function setGoalsView(view){
+  selectedGoalsView=view;
+  document.getElementById('goalsList')?.classList.toggle('goals-actual', view==='actual');
+  document.getElementById('goalsList')?.classList.toggle('goals-progress', view==='progress');
+  document.getElementById('goalTabActual')?.classList.toggle('sel', view==='actual');
+  document.getElementById('goalTabProgress')?.classList.toggle('sel', view==='progress');
 }
 
 /* ══ Plan tab ══ */
@@ -1216,7 +1334,7 @@ function render() {
   const lw=log.find(e=>e.weight)?.weight||175;
   document.getElementById('g-weight-cur').textContent=lw.toFixed(1);
   document.getElementById('g-weight-cur').className='goal-cur '+(lw<=165?'cg':lw<=169?'ca':'cr');
-  document.getElementById('gs-weight').textContent=lw>165?(lw-165).toFixed(1)+' lbs to go · 0.83 lbs/week pace':'Goal reached! 🎉';
+  document.getElementById('gs-weight').textContent=lw>165?(lw-165).toFixed(1)+' lbs to go · 0.83 lbs/week pace':'Goal reached';
   setMarker('weight', ((175-lw)/10)*100, lw<=165?'#639922':lw<=169?'#d4873a':'#ef5350');
 
   const rd=log.slice(0,7).map(e=>e.dist||0), ad=rd.length?rd.reduce((a,b)=>a+b)/rd.length:3.5;
@@ -1227,24 +1345,34 @@ function render() {
   const rs=log.slice(0,7).filter(e=>e.sleep>0).map(e=>e.sleep), as2=rs.length?rs.reduce((a,b)=>a+b)/rs.length:6.5;
   document.getElementById('g-sleep-cur').textContent=as2.toFixed(1);
   document.getElementById('g-sleep-cur').className='goal-cur '+(as2>=7.5?'cg':as2>=7?'ca':'cr');
-  document.getElementById('gs-sleep').textContent=as2>=7.5?'On target — keep it up':'Earlier bedtime = better HRV & recovery';
+  document.getElementById('gs-sleep').textContent=as2>=7.5?'On target - keep it up':'Earlier bedtime = better HRV & recovery';
   setMarker('sleep', ((as2-4.5)/5)*100, as2>=7.5?'#639922':as2>=7?'#d4873a':'#ef5350');
 
+  const calEntries=log.slice(0,7).map(e=>(e.meals||[]).filter(m=>!m.skipped).reduce((s,m)=>s+(m.kcal||0),0)).filter(Boolean);
+  const avgCal=calEntries.length?calEntries.reduce((a,b)=>a+b,0)/calEntries.length:0;
+  const calEl=document.getElementById('g-cal-cur');
+  if(calEl){
+    calEl.textContent=avgCal?Math.round(avgCal).toLocaleString():'0';
+    calEl.className='goal-cur '+(avgCal&&avgCal<=2400?'cg':avgCal<=2800?'ca':'cr');
+    document.getElementById('gs-cal').textContent=avgCal?'7-day average from food logs':'Log meals to track calories';
+    setMarker('cal', (avgCal/3200)*100, avgCal&&avgCal<=2400?'#639922':avgCal<=2800?'#d4873a':'#ef5350');
+  }
+  setGoalsView(selectedGoalsView);
   renderLog(log);
 }
 
 /* ══ History log ══ */
 function renderLog(log) {
   const el=document.getElementById('logContainer');
-  if(!log.length){ el.innerHTML='<div class="empty"><div class="empty-icon">📋</div>No entries yet.</div>'; return; }
+  if(!log.length){ el.innerHTML='<div class="empty"><div class="empty-icon"></div>No entries yet.</div>'; return; }
   el.innerHTML=log.slice(0,30).map(e=>{
     const ws=e.workouts||[];
     const dt=e.dist>0?`<span class="tag ${e.dist>=6?'tg':e.dist>=4?'ta':'tr'}">${e.dist.toFixed(1)} km</span>`:'';
     const sl=e.sleep>0?`<span class="tag ${e.sleep>=7.5?'tg':e.sleep>=7?'ta':'tr'}">${e.sleep.toFixed(1)}h</span>`:'';
     const wt=e.weight?`<span class="tag tgr">${e.weight.toFixed(1)} lbs</span>`:'';
     const fc=e.meals?.length?`<span class="tag ${e.meals.every(m=>m.quality==='Clean')?'tg':e.meals.some(m=>m.quality==='Junk')?'tr':'ta'}">~${e.meals.reduce((s,m)=>s+m.kcal,0)} kcal</span>`:'';
-    const wa=e.water?`<span class="tag tb">💧${fmtWater(e.water)}</span>`:'';
-    const al=e.alcohol?`<span class="tag tr">🍺${e.alcohol}</span>`:'';
+    const wa=e.water?`<span class="tag tb">Water ${fmtWater(e.water)}</span>`:'';
+    const al=e.alcohol?`<span class="tag tr">Alcohol ${e.alcohol}</span>`:'';
     const stars=e.rating?`<span style="color:#d4a017;letter-spacing:1px;">${'★'.repeat(e.rating)}${'☆'.repeat(5-e.rating)}</span>`:null;
     const mood=e.mood?MOOD_EMOJI[e.mood]:null;
     return `<div class="log-entry"><div class="log-top"><div class="log-date">${fmtDate(e.date)}</div><div class="log-tags">${dt}${sl}${wt}${fc}${wa}${al}</div><div class="log-wt">${wText(ws)}</div></div>${(stars||mood)?`<div class="log-meta">${[stars,mood].filter(Boolean).join(' ')}</div>`:''}</div>`;

@@ -1,4 +1,4 @@
-const CACHE = 'health-tracker-v2';
+const CACHE = 'health-tracker-v3';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -21,7 +21,7 @@ self.addEventListener('fetch', e => {
 self.addEventListener('push', e => {
   let data = {};
   try { data = e.data.json(); } catch {}
-  const title = data.title || "Log your day 💪";
+  const title = data.title || "Log your day";
   const body  = data.body  || "Tap to record tonight's distance, sleep and workout.";
   e.waitUntil(
     self.registration.showNotification(title, {
@@ -40,7 +40,7 @@ self.addEventListener('message', e => {
     const ms = e.data.ms;
     if (ms > 0 && ms < 86400000) {
       setTimeout(() => {
-        self.registration.showNotification("Log your day 💪", {
+        self.registration.showNotification("Log your day", {
           body: e.data.body || "Tap to record tonight's log.",
           tag:  'daily-reminder',
           icon: '/icon-192.png',

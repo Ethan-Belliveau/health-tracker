@@ -19,8 +19,8 @@ export default async function handler(req, res) {
     if (!ids || ids.length === 0) return res.json({ sent: 0, note: 'No subscribers' });
 
     const payload = JSON.stringify({
-      title: "Log your day 💪",
-      body:  "Time to fill in tonight's log — distance, sleep, workout & food."
+      title: "Log your day",
+      body:  "Time to fill in tonight's log - distance, sleep, workout and food."
     });
 
     let sent = 0, failed = 0;
