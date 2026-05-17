@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Health">
@@ -64,16 +64,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 /* Number fields */
 .field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
 .field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 5px; }
-.field input { width: 100%; padding: 10px 12px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 18px; font-weight: 600; color: var(--text); background: var(--bg); outline: none; -moz-appearance: textfield; font-family: inherit; }
+.field-inner { position: relative; }
+.field input { width: 100%; padding: 10px 36px 10px 12px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 18px; font-weight: 600; color: var(--text); background: var(--bg); outline: none; -moz-appearance: textfield; font-family: inherit; }
 .field input::-webkit-inner-spin-button, .field input::-webkit-outer-spin-button { -webkit-appearance: none; }
 .field input:focus { border-color: var(--blue-mid); background: #fff; }
-.field .unit { font-size: 11px; color: var(--subtle); margin-top: 3px; }
+.field-unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 600; color: var(--subtle); pointer-events: none; }
 
 /* Workout multi-select: 2×2 grid */
 .workout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
 .w-btn { padding: 12px 10px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; background: var(--bg); color: var(--text); font-family: inherit; transition: all 0.12s; text-align: center; }
 .w-btn.selected { background: var(--green-bg); border-color: #8bc34a; color: var(--green); font-weight: 600; }
-.w-btn[data-val="none"].selected { background: #f2f0ec; border-color: #c8c5be; color: var(--muted); }
 
 /* Rating + Mood */
 .vibe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
@@ -231,7 +231,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       </div>
     </div>
 
-    <div class="slabel" style="margin-top:16px;">This week</div>
+    <div class="slabel" style="margin-top:6px;">This week</div>
     <div class="stats-row">
       <div class="stat"><div class="num cg" id="s-streak">0</div><div class="lbl">Streak</div></div>
       <div class="stat"><div class="num" id="s-dist">0</div><div class="lbl">km/wk</div></div>
@@ -245,28 +245,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       <div class="field-row">
         <div class="field">
           <label>Distance</label>
-          <input type="number" id="f-dist" placeholder="0.0" step="0.1" min="0" max="50" inputmode="decimal">
-          <div class="unit">km today</div>
+          <div class="field-inner">
+            <input type="number" id="f-dist" placeholder="0.0" step="0.1" min="0" max="50" inputmode="decimal">
+            <span class="field-unit">km</span>
+          </div>
         </div>
         <div class="field">
           <label>Sleep</label>
-          <input type="number" id="f-sleep" placeholder="7.0" step="0.25" min="0" max="13" inputmode="decimal">
-          <div class="unit">hrs last night</div>
+          <div class="field-inner">
+            <input type="number" id="f-sleep" placeholder="7.0" step="0.25" min="0" max="13" inputmode="decimal">
+            <span class="field-unit">hrs</span>
+          </div>
         </div>
         <div class="field">
           <label>Weight</label>
-          <input type="number" id="f-weight" placeholder="175" step="0.1" min="100" max="300" inputmode="decimal">
-          <div class="unit">lbs</div>
+          <div class="field-inner">
+            <input type="number" id="f-weight" placeholder="175" step="0.1" min="100" max="300" inputmode="decimal">
+            <span class="field-unit">lbs</span>
+          </div>
         </div>
       </div>
 
       <!-- Workout: multi-select, Rest is exclusive -->
       <div class="slabel" style="margin-top:0;">Workout — select all that apply</div>
       <div class="workout-grid" id="workoutGrid">
-        <button class="w-btn" data-val="none"    onclick="toggleWorkout('none')">😴 Rest</button>
-        <button class="w-btn" data-val="walk"    onclick="toggleWorkout('walk')">🚶 Walk</button>
-        <button class="w-btn" data-val="run"     onclick="toggleWorkout('run')">🏃 Run</button>
-        <button class="w-btn" data-val="weights" onclick="toggleWorkout('weights')">🏋️ Weights</button>
+        <button class="w-btn" data-val="none"    onclick="toggleWorkout('none')">Rest</button>
+        <button class="w-btn" data-val="walk"    onclick="toggleWorkout('walk')">Walk</button>
+        <button class="w-btn" data-val="run"     onclick="toggleWorkout('run')">Run</button>
+        <button class="w-btn" data-val="weights" onclick="toggleWorkout('weights')">Weights</button>
       </div>
 
       <!-- Day rating + Mood -->
@@ -274,21 +280,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div class="vibe-block">
           <label>Day rating</label>
           <div class="star-row" id="starRow">
-            <button class="star-btn" data-r="1" onclick="setRating(1)">★</button>
-            <button class="star-btn" data-r="2" onclick="setRating(2)">★</button>
-            <button class="star-btn" data-r="3" onclick="setRating(3)">★</button>
-            <button class="star-btn" data-r="4" onclick="setRating(4)">★</button>
-            <button class="star-btn" data-r="5" onclick="setRating(5)">★</button>
+            <button class="star-btn" data-r="1">★</button>
+            <button class="star-btn" data-r="2">★</button>
+            <button class="star-btn" data-r="3">★</button>
+            <button class="star-btn" data-r="4">★</button>
+            <button class="star-btn" data-r="5">★</button>
           </div>
         </div>
         <div class="vibe-block">
           <label>Mood</label>
           <div class="mood-row" id="moodRow">
-            <button class="mood-btn" data-m="1" onclick="setMood(1)">😞</button>
-            <button class="mood-btn" data-m="2" onclick="setMood(2)">😐</button>
-            <button class="mood-btn" data-m="3" onclick="setMood(3)">🙂</button>
-            <button class="mood-btn" data-m="4" onclick="setMood(4)">😊</button>
-            <button class="mood-btn" data-m="5" onclick="setMood(5)">🤩</button>
+            <button class="mood-btn" data-m="1">😞</button>
+            <button class="mood-btn" data-m="2">😐</button>
+            <button class="mood-btn" data-m="3">🙂</button>
+            <button class="mood-btn" data-m="4">😊</button>
+            <button class="mood-btn" data-m="5">🤩</button>
           </div>
         </div>
       </div>
@@ -302,7 +308,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
             <div class="step-val" id="f-water">0</div>
             <button class="step-btn" onclick="adj('water',1)">+</button>
           </div>
-          <div class="step-unit">glasses (8 oz)</div>
+          <div class="step-unit">liters</div>
         </div>
         <div class="stepper-block">
           <label>🍺 Alcohol</label>
@@ -603,6 +609,7 @@ function showPage(name,btn) {
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
   if(name==='history') renderChart();
   if(name==='goals')   renderMetrics();
   if(name==='plan')    renderPlan();
@@ -631,21 +638,45 @@ function loadWorkouts(ws) {
   renderWorkoutBtns();
 }
 
-/* ══ Rating (tap again to deselect) ══ */
-function setRating(r) {
-  currentRating = currentRating===r ? 0 : r;
+/* ══ Rating — tap or drag ══ */
+function setRating(r, isDrag) {
+  currentRating = (!isDrag && currentRating === r) ? 0 : r; // tap same = deselect; drag never deselects
   document.querySelectorAll('#starRow .star-btn').forEach(b=>b.classList.toggle('lit',+b.dataset.r<=currentRating));
 }
 
-/* ══ Mood ══ */
-function setMood(m) {
-  currentMood = currentMood===m ? 0 : m;
+/* ══ Mood — tap or drag ══ */
+function setMood(m, isDrag) {
+  currentMood = (!isDrag && currentMood === m) ? 0 : m;
   document.querySelectorAll('#moodRow .mood-btn').forEach(b=>b.classList.toggle('lit',+b.dataset.m===currentMood));
 }
 
+/* ══ Drag-to-select setup ══ */
+function setupDrag(rowId, dataAttr, callback) {
+  const row = document.getElementById(rowId);
+  row.style.touchAction = 'none'; // prevent scroll hijack during drag
+  let active = false;
+  row.addEventListener('pointerdown', e => {
+    active = true;
+    row.setPointerCapture(e.pointerId);
+    const btn = e.target.closest('[' + dataAttr + ']');
+    if (btn) callback(+btn.getAttribute(dataAttr), false); // tap = allow toggle
+  });
+  row.addEventListener('pointermove', e => {
+    if (!active) return;
+    const btn = document.elementFromPoint(e.clientX, e.clientY)?.closest('[' + dataAttr + ']');
+    if (btn) callback(+btn.getAttribute(dataAttr), true); // drag = no toggle
+  });
+  row.addEventListener('pointerup',    () => { active = false; });
+  row.addEventListener('pointercancel',() => { active = false; });
+}
+
 /* ══ Steppers ══ */
+function fmtWater(v) { return v===0?'0L': v.toFixed(2).replace(/\.?0+$/,'')+'L'; }
 function adj(f,d) {
-  if(f==='water')   { currentWater  =Math.max(0,Math.min(20,currentWater  +d)); document.getElementById('f-water').textContent  =currentWater;  }
+  if(f==='water') {
+    currentWater = Math.round(Math.max(0, Math.min(5, currentWater + d * 0.25)) * 100) / 100;
+    document.getElementById('f-water').textContent = fmtWater(currentWater);
+  }
   if(f==='alcohol') { currentAlcohol=Math.max(0,Math.min(20,currentAlcohol+d)); document.getElementById('f-alcohol').textContent=currentAlcohol; }
 }
 
@@ -690,7 +721,7 @@ function loadTodayEntry() {
   loadWorkouts(e.workouts);
   if(e.rating)  setRating(e.rating);
   if(e.mood)    setMood(e.mood);
-  if(e.water)   {currentWater  =e.water;   document.getElementById('f-water').textContent  =currentWater;  }
+  if(e.water)   {currentWater  =e.water;   document.getElementById('f-water').textContent  =fmtWater(currentWater);  }
   if(e.alcohol) {currentAlcohol=e.alcohol; document.getElementById('f-alcohol').textContent=currentAlcohol; }
   if(e.meals?.length){ currentMeals=[...e.meals]; renderMeals(); }
 }
@@ -796,7 +827,7 @@ function renderLog(log) {
     const sl=e.sleep>0?`<span class="tag ${e.sleep>=7.5?'tg':e.sleep>=7?'ta':'tr'}">${e.sleep.toFixed(1)}h</span>`:'';
     const wt=e.weight?`<span class="tag tgr">${e.weight.toFixed(1)} lbs</span>`:'';
     const fc=e.meals?.length?`<span class="tag ${e.meals.every(m=>m.quality==='Clean')?'tg':e.meals.some(m=>m.quality==='Junk')?'tr':'ta'}">~${e.meals.reduce((s,m)=>s+m.kcal,0)} kcal</span>`:'';
-    const wa=e.water?`<span class="tag tb">💧${e.water}</span>`:'';
+    const wa=e.water?`<span class="tag tb">💧${fmtWater(e.water)}</span>`:'';
     const al=e.alcohol?`<span class="tag tr">🍺${e.alcohol}</span>`:'';
     const stars=e.rating?`<span style="color:#d4a017;letter-spacing:1px;">${'★'.repeat(e.rating)}${'☆'.repeat(5-e.rating)}</span>`:null;
     const mood=e.mood?MOOD_EMOJI[e.mood]:null;
@@ -821,7 +852,10 @@ function renderChart() {
 
 /* ══ Init ══ */
 selectedPlanWeek=weekNum();
+setupDrag('starRow', 'data-r', setRating);
+setupDrag('moodRow', 'data-m', setMood);
 render(); renderMetrics(); loadTodayEntry(); checkBanner(); initPush(); scheduleReminder();
+window.scrollTo({ top: 0, behavior: 'instant' });
 </script>
 </body>
 </html>
