@@ -189,7 +189,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .wk-pill.cur.sel { background: var(--green-mid); border-color: var(--green-mid); color: #fff; }
 .plan-week-title { font-size: 16px; font-weight: 600; }
 .plan-week-dates { font-size: 12px; color: var(--muted); margin: 2px 0 8px; }
-.plan-focus { width: 100%; border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; background: var(--surface); outline: none; margin-bottom: 14px; }
+.plan-focus { width: 100%; border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; background: var(--surface); outline: none; margin-bottom: 14px; min-height: 58px; resize: vertical; line-height: 1.45; color: var(--text); }
 .plan-focus:focus { border-color: var(--blue-mid); }
 .plan-day { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
 .plan-day.is-today { border-color: var(--blue-mid); }
@@ -479,7 +479,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
       <div class="week-pills" id="weekPills"></div>
       <div class="plan-week-title" id="planWeekTitle">Week 1</div>
       <div class="plan-week-dates" id="planWeekDates"></div>
-      <input class="plan-focus" id="planFocus" placeholder="Week focus (e.g. Build aerobic base, 3× cardio)" oninput="saveWeekFocus()">
+      <textarea class="plan-focus" id="planFocus" placeholder="Week focus (e.g. Build aerobic base, 3× cardio)" oninput="saveWeekFocus()"></textarea>
       <div id="planDays"></div>
     </div>
   </div>
@@ -836,7 +836,7 @@ const CART_KEY     = 'ethan_meal_cart';
 const GROCERY_KEY  = 'ethan_grocery_checked';
 const CUSTOM_MEALS_KEY = 'ethan_custom_meals';
 const BACKUP_KEY   = 'ethan_backup_meta';
-const START        = new Date('2026-05-17'); // Sunday
+const START        = new Date(2026, 4, 17, 12); // Sunday, local time
 const TOTAL_WEEKS  = 12;
 const MOOD_EMOJI = ['', '😞', '😐', '🙂', '😊', '🤩'];
 
@@ -965,10 +965,13 @@ async function restoreBackup() {
   }
 }
 
-function today()  { return new Date().toISOString().slice(0,10); }
-function weekNum(){ return Math.max(1,Math.min(TOTAL_WEEKS,Math.floor((Date.now()-START.getTime())/6048e5)+1)); }
-function fmtDate(s){ return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
-function dstr(d)  { return d.toISOString().slice(0,10); }
+function localNoon(d=new Date()) { return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12); }
+function parseDateKey(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y, m-1, d, 12); }
+function dateKey(d) { const x=localNoon(d); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
+function today()  { return dateKey(new Date()); }
+function weekNum(){ return Math.max(1,Math.min(TOTAL_WEEKS,Math.floor((localNoon().getTime()-START.getTime())/6048e5)+1)); }
+function fmtDate(s){ return parseDateKey(s).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function dstr(d)  { return dateKey(d); }
 function esc(s)   { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function wText(ws){ return (!ws||!ws.length)?'Rest':ws.map(w=>({walk:'Walk',run:'Run',weights:'Weights'}[w]||w)).join(' - '); }
 
@@ -1498,7 +1501,7 @@ function render() {
 
   // Week = Sun–Sat containing today
   const ws=new Date(now); ws.setDate(now.getDate()-now.getDay()); ws.setHours(0,0,0,0);
-  const wk=log.filter(e=>new Date(e.date+'T12:00:00')>=ws);
+  const wk=log.filter(e=>parseDateKey(e.date)>=ws);
   const wDist=wk.reduce((s,e)=>s+(e.dist||0),0);
   const wWork=wk.filter(e=>e.workouts&&e.workouts.length>0).length;
   const slps=wk.filter(e=>e.sleep>0).map(e=>e.sleep);
@@ -1507,7 +1510,7 @@ function render() {
   document.getElementById('s-sleep').textContent=slps.length?(slps.reduce((a,b)=>a+b)/slps.length).toFixed(1):'—';
 
   let streak=0; const dates=new Set(log.map(e=>e.date));
-  for(let i=0;i<90;i++){const d=new Date(now);d.setDate(now.getDate()-i);if(dates.has(d.toISOString().slice(0,10)))streak++;else break;}
+  for(let i=0;i<90;i++){const d=localNoon(now);d.setDate(d.getDate()-i);if(dates.has(dstr(d)))streak++;else break;}
   document.getElementById('s-streak').textContent=streak;
   document.getElementById('s-streak').className='num '+(streak>=5?'cg':streak>=2?'ca':'cr');
 
