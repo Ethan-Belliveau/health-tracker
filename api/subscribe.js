@@ -1,6 +1,8 @@
-// Receives a PushSubscription from the browser and stores it in Vercel KV.
+// Receives a PushSubscription from the browser and stores it in Upstash Redis.
 // POST /api/subscribe  { endpoint, keys: { p256dh, auth } }
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const redis = Redis.fromEnv();
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,10 +17,10 @@ export default async function handler(req, res) {
 
     // Use the endpoint URL as a unique key (hashed to stay short)
     const id = Buffer.from(sub.endpoint).toString('base64').slice(-40);
-    await kv.set(`push:${id}`, JSON.stringify(sub), { ex: 60 * 60 * 24 * 60 }); // 60-day TTL
+    await redis.set(`push:${id}`, JSON.stringify(sub), { ex: 60 * 60 * 24 * 60 }); // 60-day TTL
 
     // Keep a set of all sub IDs so remind.js can list them
-    await kv.sadd('push:ids', id);
+    await redis.sadd('push:ids', id);
 
     return res.status(200).json({ ok: true });
   } catch (err) {

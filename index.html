@@ -836,6 +836,7 @@ const CART_KEY     = 'ethan_meal_cart';
 const GROCERY_KEY  = 'ethan_grocery_checked';
 const CUSTOM_MEALS_KEY = 'ethan_custom_meals';
 const BACKUP_KEY   = 'ethan_backup_meta';
+const DRAFT_KEY    = 'ethan_daily_log_draft';
 const START        = new Date(2026, 4, 17, 12); // Sunday, local time
 const TOTAL_WEEKS  = 12;
 const MOOD_EMOJI = ['', '😞', '😐', '🙂', '😊', '🤩'];
@@ -860,6 +861,7 @@ let selectedGoalsView = 'actual';
 let missedWorkouts = new Set();
 let missedRating = 0;
 let missedMood = 0;
+let draftPaused = false;
 
 /* ══ Storage (with v2→v3 migration) ══ */
 function getLog() {
@@ -889,10 +891,12 @@ function getCustomMeals() { try { return JSON.parse(localStorage.getItem(CUSTOM_
 function setCustomMeals(v) { localStorage.setItem(CUSTOM_MEALS_KEY, JSON.stringify(v)); markLocalChange(); }
 function getGroceryChecked() { try { return JSON.parse(localStorage.getItem(GROCERY_KEY)||'[]'); } catch { return []; } }
 function setGroceryChecked(v) { localStorage.setItem(GROCERY_KEY, JSON.stringify(v)); markLocalChange(); }
+function getDailyDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY)||'null'); } catch { return null; } }
+function setDailyDraft(v) { v ? localStorage.setItem(DRAFT_KEY, JSON.stringify(v)) : localStorage.removeItem(DRAFT_KEY); markLocalChange(); }
 function backupMeta() { try { return JSON.parse(localStorage.getItem(BACKUP_KEY)||'{}'); } catch { return {}; } }
 function setBackupStatus(msg) { const el=document.getElementById('backupStatus'); if(el) el.textContent=msg; }
 function appState() {
-  return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), customMeals:getCustomMeals(), groceryChecked:getGroceryChecked(), updatedAt:backupMeta().updatedAt||null };
+  return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), customMeals:getCustomMeals(), groceryChecked:getGroceryChecked(), dailyDraft:getDailyDraft(), updatedAt:backupMeta().updatedAt||null };
 }
 function backupPayload() {
   return JSON.stringify({state:appState()});
@@ -905,12 +909,13 @@ function writeAppState(state) {
   if(state.mealCart) localStorage.setItem(CART_KEY, JSON.stringify(state.mealCart));
   if(Array.isArray(state.customMeals)) localStorage.setItem(CUSTOM_MEALS_KEY, JSON.stringify(state.customMeals));
   if(Array.isArray(state.groceryChecked)) localStorage.setItem(GROCERY_KEY, JSON.stringify(state.groceryChecked));
+  if(state.dailyDraft) localStorage.setItem(DRAFT_KEY, JSON.stringify(state.dailyDraft)); else localStorage.removeItem(DRAFT_KEY);
   localStorage.setItem(BACKUP_KEY, JSON.stringify({updatedAt:state.updatedAt||new Date().toISOString(), syncedAt:state.updatedAt||null}));
   restoringBackup = false;
 }
 function hasLocalData() {
   const s=appState();
-  return s.log.length || Object.keys(s.plan.weekFocus||{}).length || Object.keys(s.plan.days||{}).length || Object.keys(s.metrics||{}).length || Object.keys(s.mealCart||{}).length || s.customMeals.length;
+  return s.log.length || Object.keys(s.plan.weekFocus||{}).length || Object.keys(s.plan.days||{}).length || Object.keys(s.metrics||{}).length || Object.keys(s.mealCart||{}).length || s.customMeals.length || !!s.dailyDraft;
 }
 function markLocalChange() {
   if(restoringBackup) return;
@@ -949,7 +954,15 @@ async function restoreBackup() {
     if(!r.ok) throw new Error('load failed');
     const data=await r.json();
     const remote=data.state;
-    if(!remote) { setBackupStatus(hasLocalData()?'Backup ready':'No cloud backup yet'); return; }
+    if(!remote) {
+      if(hasLocalData()) {
+        setBackupStatus('Uploading existing data...');
+        queueBackup();
+      } else {
+        setBackupStatus('No cloud backup yet');
+      }
+      return;
+    }
     const localUpdated=backupMeta().updatedAt ? new Date(backupMeta().updatedAt).getTime() : 0;
     const remoteUpdated=remote.updatedAt ? new Date(remote.updatedAt).getTime() : (data.syncedAt ? new Date(data.syncedAt).getTime() : 0);
     if(!hasLocalData() || remoteUpdated > localUpdated) {
@@ -1050,6 +1063,7 @@ function toggleWorkout(val) {
     else selectedWorkouts.add(val);
   }
   renderWorkoutBtns();
+  saveLogDraftFromForm();
 }
 function renderWorkoutBtns() {
   const isRest = selectedWorkouts.size===0;
@@ -1068,12 +1082,14 @@ function loadWorkouts(ws) {
 function setRating(r, isDrag) {
   currentRating = (!isDrag && currentRating === r) ? 0 : r; // tap same = deselect; drag never deselects
   document.querySelectorAll('#starRow .star-btn').forEach(b=>b.classList.toggle('lit',+b.dataset.r<=currentRating));
+  saveLogDraftFromForm();
 }
 
 /* ══ Mood — tap or drag ══ */
 function setMood(m, isDrag) {
   currentMood = (!isDrag && currentMood === m) ? 0 : m;
   document.querySelectorAll('#moodRow .mood-btn').forEach(b=>b.classList.toggle('lit',+b.dataset.m===currentMood));
+  saveLogDraftFromForm();
 }
 
 /* ══ Drag-to-select setup ══ */
@@ -1104,6 +1120,7 @@ function adj(f,d) {
     document.getElementById('f-water').textContent = fmtWater(currentWater);
   }
   if(f==='alcohol') { currentAlcohol=Math.max(0,Math.min(20,currentAlcohol+d)); document.getElementById('f-alcohol').textContent=currentAlcohol; }
+  saveLogDraftFromForm();
 }
 
 /* ══ Food log ══ */
@@ -1117,25 +1134,28 @@ function openMealForm() {
   document.getElementById('addMealToggleBtn').textContent = 'Done';
   renderMealKindBtns();
   document.querySelectorAll('.q-chip').forEach(c=>c.classList.toggle('sel', c.dataset.q===mealQ));
+  saveLogDraftFromForm();
   document.getElementById('mealName').focus();
 }
 function closeMealForm() {
   document.getElementById('mealForm').classList.remove('show');
   document.getElementById('addMealToggleBtn').textContent = '+ Add meal';
+  saveLogDraftFromForm();
 }
 function toggleMealForm() {
   document.getElementById('mealForm').classList.contains('show') ? closeMealForm() : openMealForm();
 }
-function selMealKind(el){ mealKind=el.dataset.kind; renderMealKindBtns(); }
+function selMealKind(el){ mealKind=el.dataset.kind; renderMealKindBtns(); saveLogDraftFromForm(); }
 function renderMealKindBtns(){ document.querySelectorAll('.meal-kind-btn').forEach(b=>b.classList.toggle('sel', b.dataset.kind===mealKind)); }
 function setMealKcal(v){
   mealKcal = Math.max(0, Math.min(3000, parseInt(v,10)||0));
   const range=document.getElementById('mealKcalRange'), input=document.getElementById('mealKcalInput');
   if(range) range.value=Math.min(1600, mealKcal);
   if(input) input.value=mealKcal;
+  saveLogDraftFromForm();
 }
 function selKcal(el){ setMealKcal(el.dataset.kcal); }
-function selQ(el) { document.querySelectorAll('.q-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealQ=el.dataset.q; }
+function selQ(el) { document.querySelectorAll('.q-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); mealQ=el.dataset.q; saveLogDraftFromForm(); }
 function advanceMealKind(){
   const idx=MEAL_DEFAULTS.indexOf(mealKind);
   mealKind=MEAL_DEFAULTS[Math.min(idx+1, MEAL_DEFAULTS.length-1)] || 'Snack';
@@ -1144,6 +1164,7 @@ function advanceMealKind(){
   document.getElementById('mealName').value='';
   renderMealKindBtns();
   document.querySelectorAll('.q-chip').forEach(c=>c.classList.toggle('sel', c.dataset.q===mealQ));
+  saveLogDraftFromForm();
   document.getElementById('mealName').focus();
 }
 function addMeal() {
@@ -1151,14 +1172,16 @@ function addMeal() {
   const name=document.getElementById('mealName').value.trim() || mealKind;
   currentMeals.push({name,kcal:mealKcal||0,quality:mealQ,kind:mealKind,skipped:false});
   renderMeals();
+  saveLogDraftFromForm();
   advanceMealKind();
 }
 function skipMeal() {
   currentMeals.push({name:mealKind,kcal:0,quality:'Clean',kind:mealKind,skipped:true});
   renderMeals();
+  saveLogDraftFromForm();
   advanceMealKind();
 }
-function removeMeal(i){ currentMeals.splice(i,1); renderMeals(); }
+function removeMeal(i){ currentMeals.splice(i,1); renderMeals(); saveLogDraftFromForm(); }
 function renderMeals(list) {
   const m=list!==undefined?list:currentMeals, el=document.getElementById('mealList');
   if(!m.length){ el.innerHTML=''; document.getElementById('foodTotal').textContent=''; return; }
@@ -1172,6 +1195,80 @@ function renderMeals(list) {
     return list===undefined?'<div class="swipe-wrap" data-swipe><button class="swipe-delete" onclick="removeMeal('+i+')">Delete</button><div class="swipe-content">'+row+'</div></div>':row;
   }).join('');
   setupSwipeDeletes();
+}
+
+function logDraftEntry() {
+  return {
+    date:selectedLogDate||today(),
+    dist:parseFloat(document.getElementById('f-dist').value)||0,
+    sleep:parseFloat(document.getElementById('f-sleep').value)||0,
+    weight:parseFloat(document.getElementById('f-weight').value)||null,
+    workouts:[...selectedWorkouts],
+    rating:currentRating||null,
+    mood:currentMood||null,
+    water:currentWater,
+    alcohol:currentAlcohol,
+    meals:[...currentMeals]
+  };
+}
+function hasDraftContent(draft) {
+  if(!draft) return false;
+  const e=draft.entry||{};
+  const mf=draft.mealForm||{};
+  return !!(e.dist || e.sleep || e.weight || e.workouts?.length || e.rating || e.mood || e.water || e.alcohol || e.meals?.length || mf.open || mf.name);
+}
+function saveLogDraftFromForm() {
+  if(draftPaused || restoringBackup) return;
+  const draftDate=selectedLogDate||today();
+  if(draftDate===today() && getLog().some(e=>e.date===draftDate) && !editingToday) return;
+  const mealOpen=document.getElementById('mealForm')?.classList.contains('show');
+  const draft={
+    date:draftDate,
+    entry:logDraftEntry(),
+    mealForm:{
+      open:!!mealOpen,
+      kind:mealKind,
+      name:document.getElementById('mealName')?.value||'',
+      kcal:mealKcal||0,
+      quality:mealQ||'Clean'
+    },
+    updatedAt:new Date().toISOString()
+  };
+  setDailyDraft(hasDraftContent(draft) ? draft : null);
+}
+function applyLogDraft(date) {
+  const draft=getDailyDraft();
+  if(!draft || draft.date!==date || !draft.entry) return false;
+  draftPaused=true;
+  const e=draft.entry;
+  if(e.dist)   document.getElementById('f-dist').value  =e.dist;
+  if(e.sleep)  document.getElementById('f-sleep').value =e.sleep;
+  if(e.weight) document.getElementById('f-weight').value=e.weight;
+  loadWorkouts(e.workouts);
+  if(e.rating) setRating(e.rating, true);
+  if(e.mood) setMood(e.mood, true);
+  currentWater=e.water||0; currentAlcohol=e.alcohol||0;
+  document.getElementById('f-water').textContent=fmtWater(currentWater);
+  document.getElementById('f-alcohol').textContent=currentAlcohol;
+  currentMeals=Array.isArray(e.meals)?[...e.meals]:[];
+  renderMeals();
+  const mf=draft.mealForm||{};
+  if(mf.open) {
+    document.getElementById('mealForm').classList.add('show');
+    document.getElementById('addMealToggleBtn').textContent='Done';
+    mealKind=mf.kind||nextMealKind();
+    mealQ=mf.quality||'Clean';
+    setMealKcal(mf.kcal||500);
+    document.getElementById('mealName').value=mf.name||'';
+    renderMealKindBtns();
+    document.querySelectorAll('.q-chip').forEach(c=>c.classList.toggle('sel', c.dataset.q===mealQ));
+  }
+  draftPaused=false;
+  return true;
+}
+function setupLogDraftAutosave() {
+  ['f-dist','f-sleep','f-weight','mealName'].forEach(id=>document.getElementById(id)?.addEventListener('input', saveLogDraftFromForm));
+  ['mealKcalRange','mealKcalInput'].forEach(id=>document.getElementById(id)?.addEventListener('change', saveLogDraftFromForm));
 }
 
 /* Meal planner */
@@ -1271,6 +1368,8 @@ function saveCheckin() {
   if(idx>=0) log[idx]=entry; else log.unshift(entry);
   log.sort((a,b)=>b.date.localeCompare(a.date));
   saveLog(log);
+  const draft=getDailyDraft();
+  if(draft?.date===entry.date) setDailyDraft(null);
   const btn=document.getElementById('saveBtn'); btn.textContent='Saved'; btn.classList.add('saved');
   setTimeout(()=>{btn.textContent='Save log';btn.classList.remove('saved');},1600);
   if(entry.date===today()) editingToday=false;
@@ -1280,26 +1379,33 @@ function saveCheckin() {
 
 function loadTodayEntry() { loadEntryForDate(today()); }
 function loadEntryForDate(date) {
+  draftPaused=true;
   resetLogForm(); selectedLogDate=date;
   document.getElementById('saveBtn').textContent = date===today() ? "Save log" : "Save "+fmtDate(date);
-  const e=getLog().find(x=>x.date===date); if(!e) { updateTodayCompleteState(); return; }
-  if(e.dist)   document.getElementById('f-dist').value  =e.dist;
-  if(e.sleep)  document.getElementById('f-sleep').value =e.sleep;
-  if(e.weight) document.getElementById('f-weight').value=e.weight;
-  loadWorkouts(e.workouts);
-  if(e.rating)  setRating(e.rating);
-  if(e.mood)    setMood(e.mood);
-  if(e.water)   {currentWater  =e.water;   document.getElementById('f-water').textContent  =fmtWater(currentWater);  }
-  if(e.alcohol) {currentAlcohol=e.alcohol; document.getElementById('f-alcohol').textContent=currentAlcohol; }
-  if(e.meals?.length){ currentMeals=[...e.meals]; renderMeals(); }
+  const e=getLog().find(x=>x.date===date);
+  if(e) {
+    if(e.dist)   document.getElementById('f-dist').value  =e.dist;
+    if(e.sleep)  document.getElementById('f-sleep').value =e.sleep;
+    if(e.weight) document.getElementById('f-weight').value=e.weight;
+    loadWorkouts(e.workouts);
+    if(e.rating)  setRating(e.rating, true);
+    if(e.mood)    setMood(e.mood, true);
+    if(e.water)   {currentWater  =e.water;   document.getElementById('f-water').textContent  =fmtWater(currentWater);  }
+    if(e.alcohol) {currentAlcohol=e.alcohol; document.getElementById('f-alcohol').textContent=currentAlcohol; }
+    if(e.meals?.length){ currentMeals=[...e.meals]; renderMeals(); }
+  }
+  draftPaused=false;
+  applyLogDraft(date);
   updateTodayCompleteState();
 }
 function resetLogForm(){
+  const wasPaused=draftPaused; draftPaused=true;
   ['f-dist','f-sleep','f-weight'].forEach(id=>document.getElementById(id).value='');
   loadWorkouts([]); currentRating=0; currentMood=0; currentWater=0; currentAlcohol=0; currentMeals=[];
   document.getElementById('f-water').textContent=fmtWater(0);
   document.getElementById('f-alcohol').textContent='0';
   setRating(0,true); setMood(0,true); renderMeals(); closeMealForm();
+  draftPaused=wasPaused;
 }
 function editTodayEntry(){ editingToday=true; selectedLogDate=today(); updateTodayCompleteState(); }
 function updateTodayCompleteState(){
@@ -1583,9 +1689,10 @@ function renderChart() {
 selectedPlanWeek=weekNum();
 setupDrag('starRow', 'data-r', setRating);
 setupDrag('moodRow', 'data-m', setMood);
+setupLogDraftAutosave();
 render(); renderMetrics(); renderMealPlanner(); loadTodayEntry(); checkBanner(); initPush(); scheduleReminder(); restoreBackup();
-window.addEventListener('pagehide', flushBackup);
-document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushBackup(); });
+window.addEventListener('pagehide', ()=>{ saveLogDraftFromForm(); flushBackup(); });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') { saveLogDraftFromForm(); flushBackup(); } });
 window.scrollTo({ top: 0, behavior: 'instant' });
 </script>
 </body>
