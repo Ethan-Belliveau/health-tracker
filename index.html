@@ -261,6 +261,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .meal-card-info { flex: 1; min-width: 0; }
 .meal-card-name { font-size: 14px; font-weight: 500; display: block; }
 .meal-card-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.meal-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+.difficulty-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: 2px 6px; border-radius: 7px; border: 0.5px solid transparent; }
+.difficulty-badge.easy { background: var(--green-bg); color: var(--green); border-color: rgba(92,151,50,.18); }
+.difficulty-badge.medium { background: var(--amber-bg); color: var(--amber); border-color: rgba(186,117,23,.18); }
+.difficulty-badge.hard { background: var(--red-bg); color: var(--red); border-color: rgba(226,75,74,.18); }
 .meal-card .meal-add-btn { width: auto; flex-shrink: 0; min-width: 40px; height: 36px; border-radius: 10px; border: none; background: var(--green-bg); color: var(--green); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 0 10px; }
 .meal-card .meal-add-btn.in-cart { background: var(--green); color: #fff; }
 .meal-card-body { padding: 0 14px 12px; border-top: 0.5px solid #f2efe8; }
@@ -672,8 +677,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div class="goal-top">
           <span class="goal-name">Daily distance</span>
           <div class="goal-right">
-            <div><span class="goal-cur ca" id="g-dist-cur">3.5</span><span class="goal-unit">km avg</span></div>
-            <div class="goal-tgt-label">target - 6 km/day</div>
+            <div><span class="goal-cur ca" id="g-dist-cur">3.5</span><span class="goal-unit">km/day avg</span></div>
+            <div class="goal-tgt-label" id="g-dist-target">target - 6.0 km/day</div>
           </div>
         </div>
         <!-- Scale 0→8 km -->
@@ -682,7 +687,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
           <div class="zone-target-line" style="left:75%"></div>
         </div>
         <div class="zone-labels"><span>0</span><span>3 km</span><span>6 ✓</span><span>8 km</span></div>
-        <div class="goal-sub">7-day rolling average across all days</div>
+        <div class="goal-sub" id="gs-dist">7-day rolling average across logged days</div>
       </div>
 
       <!-- Sleep -->
@@ -690,8 +695,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div class="goal-top">
           <span class="goal-name">Sleep</span>
           <div class="goal-right">
-            <div><span class="goal-cur cr" id="g-sleep-cur">6.5</span><span class="goal-unit">hrs</span></div>
-            <div class="goal-tgt-label">target - 7.5 hrs</div>
+            <div><span class="goal-cur cr" id="g-sleep-cur">6.5</span><span class="goal-unit">hrs/night avg</span></div>
+            <div class="goal-tgt-label" id="g-sleep-target">target - 7.5 hrs/night</div>
           </div>
         </div>
         <!-- Scale 4.5→9.5 hrs -->
@@ -708,15 +713,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
         <div class="goal-top">
           <span class="goal-name">Calories</span>
           <div class="goal-right">
-            <div><span class="goal-cur ca" id="g-cal-cur">0</span><span class="goal-unit">kcal avg</span></div>
-            <div class="goal-tgt-label" id="g-cal-target">target based on weight and distance goals</div>
+            <div><span class="goal-cur ca" id="g-cal-cur">0</span><span class="goal-unit">kcal/day avg</span></div>
+            <div class="goal-tgt-label" id="g-cal-target">target - calculating</div>
           </div>
         </div>
         <div class="zone-track" style="background:linear-gradient(to right,#3b8c10 0%,#8bc34a 45%,#EF9F27 75%,#ef5350 100%)">
           <div class="zone-marker" id="zm-cal"></div>
           <div class="zone-target-line" style="left:56%"></div>
         </div>
-        <div class="zone-labels"><span>low</span><span>2200</span><span>2800+</span></div>
+        <div class="zone-labels" id="calZoneLabels"><span>low</span><span>target</span><span>high</span></div>
         <div class="goal-sub" id="gs-cal">7-day average from food logs</div>
       </div>
 
@@ -1295,9 +1300,9 @@ const MEAL_LIBRARY = [
   {id:'apple-peanut-butter',cat:'Snack',name:'Apple peanut butter',kcal:280,time:'3 min',ingredients:[i('apple',1,'piece'),i('peanut butter',2,'tbsp')],recipe:['Slice apple.','Serve with peanut butter for dipping.']},
   {id:'hummus-veg',cat:'Snack',name:'Hummus veggie plate',kcal:260,time:'5 min',ingredients:[i('hummus',0.33,'cup'),i('carrots',1,'cup'),i('cucumber',1,'cup'),i('bell peppers',1,'cup')],recipe:['Slice vegetables.','Serve with hummus.']},
   {id:'egg-snack-box',cat:'Snack',name:'Boiled egg snack box',kcal:310,time:'12 min',ingredients:[i('eggs',2,'piece'),i('grapes',1,'cup'),i('almonds',1,'oz'),i('carrots',0.5,'cup')],recipe:['Boil eggs and cool.','Pack with grapes, almonds, and carrots.']},
-  {id:'salmon-sheet-pan',cat:'Batch',name:'Sheet-pan salmon dinners',kcal:640,time:'30 min',ingredients:[i('salmon fillet',6,'oz'),i('sweet potato',1,'piece'),i('broccoli',1.5,'cup'),i('olive oil',1,'tbsp'),i('lemon juice',1,'tbsp')],recipe:['Roast sweet potato first for 15 minutes.','Add salmon and broccoli to the pan.','Roast until salmon flakes easily.']},
-  {id:'chicken-soup',cat:'Batch',name:'Chicken rice soup',kcal:460,time:'45 min',ingredients:[i('chicken breast',6,'oz'),i('chicken broth',2,'cup'),i('brown rice',0.5,'cup'),i('carrots',0.5,'cup'),i('celery',0.5,'cup'),i('onion',0.5,'piece')],recipe:['Simmer chicken, broth, rice, and vegetables.','Shred chicken once cooked.','Season and serve.']},
-  {id:'overnight-oats',cat:'Batch',name:'Overnight oats jar',kcal:440,time:'5 min',ingredients:[i('rolled oats',0.5,'cup'),i('Greek yogurt',0.5,'cup'),i('milk',0.5,'cup'),i('berries',0.5,'cup'),i('chia seeds',1,'tbsp')],recipe:['Mix oats, yogurt, milk, and chia in a jar.','Refrigerate overnight.','Top with berries.']},
+  {id:'salmon-sheet-pan',cat:'Dinner',name:'Sheet-pan salmon dinners',kcal:640,time:'30 min',ingredients:[i('salmon fillet',6,'oz'),i('sweet potato',1,'piece'),i('broccoli',1.5,'cup'),i('olive oil',1,'tbsp'),i('lemon juice',1,'tbsp')],recipe:['Roast sweet potato first for 15 minutes.','Add salmon and broccoli to the pan.','Roast until salmon flakes easily.']},
+  {id:'chicken-soup',cat:'Dinner',name:'Chicken rice soup',kcal:460,time:'45 min',ingredients:[i('chicken breast',6,'oz'),i('chicken broth',2,'cup'),i('brown rice',0.5,'cup'),i('carrots',0.5,'cup'),i('celery',0.5,'cup'),i('onion',0.5,'piece')],recipe:['Simmer chicken, broth, rice, and vegetables.','Shred chicken once cooked.','Season and serve.']},
+  {id:'overnight-oats',cat:'Breakfast',name:'Overnight oats jar',kcal:440,time:'5 min',ingredients:[i('rolled oats',0.5,'cup'),i('Greek yogurt',0.5,'cup'),i('milk',0.5,'cup'),i('berries',0.5,'cup'),i('chia seeds',1,'tbsp')],recipe:['Mix oats, yogurt, milk, and chia in a jar.','Refrigerate overnight.','Top with berries.']},
   {id:'med-chicken-pita',cat:'Lunch',name:'Mediterranean chicken pita',kcal:590,time:'15 min',ingredients:[i('pita',1,'piece'),i('chicken breast',5,'oz'),i('tzatziki',2,'tbsp'),i('cucumber',0.5,'cup'),i('tomatoes',0.5,'cup'),i('feta',1,'oz')],recipe:['Warm pita and sliced cooked chicken.','Fill pita with chicken, vegetables, feta, and tzatziki.']},
   {id:'pork-tenderloin',cat:'Dinner',name:'Pork tenderloin apple slaw',kcal:610,time:'30 min',ingredients:[i('pork tenderloin',6,'oz'),i('cabbage slaw',1.5,'cup'),i('apple',0.5,'piece'),i('Greek yogurt',2,'tbsp'),i('baby potatoes',5,'oz')],recipe:['Roast pork and potatoes.','Mix slaw with apple and yogurt.','Slice pork and serve with slaw.']},
   {id:'black-bean-eggs',cat:'Breakfast',name:'Black bean egg skillet',kcal:510,time:'15 min',ingredients:[i('eggs',2,'piece'),i('black beans',0.75,'cup'),i('salsa',3,'tbsp'),i('spinach',1,'cup'),i('cheddar',1,'oz')],recipe:['Warm beans and salsa in a skillet.','Add spinach until wilted.','Top with eggs and cheddar.']},
@@ -1305,33 +1310,89 @@ const MEAL_LIBRARY = [
   {id:'curry-chickpeas',cat:'Dinner',name:'Chickpea spinach curry',kcal:620,time:'25 min',ingredients:[i('chickpeas',1,'cup'),i('spinach',2,'cup'),i('light coconut milk',0.5,'cup'),i('brown rice',0.75,'cup'),i('curry powder',2,'tsp')],recipe:['Simmer chickpeas with coconut milk and curry powder.','Stir in spinach.','Serve over rice.']}
 ];
 function i(item, amount, unit){ return {item, amount, unit}; }
-const CATEGORY_ORDER = ['Easy','Breakfast','Lunch','Dinner','Snack','Batch','Custom'];
-const MEAL_IMAGES = {
-  Breakfast:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=128&q=70',
-  Lunch:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=128&q=70',
-  Dinner:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=128&q=70',
-  Snack:'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=128&q=70',
-  Batch:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=128&q=70',
-  Easy:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=128&q=70',
-  Custom:'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=128&q=70'
+const CATEGORY_ORDER = ['Breakfast','Lunch','Dinner','Snack'];
+const CATEGORY_LABEL = {Breakfast:'Breakfast',Lunch:'Lunch',Dinner:'Dinner',Snack:'Snacks'};
+const MEAL_CATEGORY_OVERRIDES = {
+  'easy-rotisserie-wrap':'Lunch',
+  'easy-tuna-rice':'Lunch',
+  'easy-cottage-toast':'Breakfast',
+  'easy-chicken-salad-kit':'Lunch',
+  'salmon-sheet-pan':'Dinner',
+  'chicken-soup':'Dinner',
+  'overnight-oats':'Breakfast'
+};
+const IMAGE_QUERIES = {
+  'egg-avocado-toast':'avocado egg toast',
+  'greek-yogurt-bowl':'greek yogurt berry bowl',
+  'protein-oats':'banana oatmeal bowl',
+  'cottage-cheese-plate':'cottage cheese fruit bowl',
+  'turkey-breakfast-wrap':'breakfast egg wrap',
+  'chicken-rice-bowl':'chicken rice bowl broccoli',
+  'tuna-white-bean-salad':'tuna bean salad',
+  'turkey-chili':'turkey chili bowl',
+  'chickpea-wrap':'chickpea feta wrap',
+  'salmon-quinoa-salad':'salmon quinoa salad',
+  'steak-sweet-potato':'steak sweet potato green beans',
+  'shrimp-tacos':'shrimp tacos cabbage',
+  'turkey-meatballs':'turkey meatballs pasta',
+  'tofu-stir-fry':'tofu vegetable stir fry',
+  'chicken-fajita-bowl':'chicken fajita bowl',
+  'lentil-soup':'lentil vegetable soup',
+  'cod-potatoes':'cod potatoes asparagus',
+  'beef-burrito-bowl':'beef burrito bowl',
+  'smoothie':'berry protein smoothie',
+  'apple-peanut-butter':'apple peanut butter snack',
+  'hummus-veg':'hummus vegetable plate',
+  'egg-snack-box':'boiled egg snack box',
+  'salmon-sheet-pan':'sheet pan salmon broccoli sweet potato',
+  'chicken-soup':'chicken rice soup',
+  'overnight-oats':'overnight oats jar berries',
+  'med-chicken-pita':'mediterranean chicken pita',
+  'pork-tenderloin':'pork tenderloin apple slaw',
+  'black-bean-eggs':'black bean egg skillet',
+  'sardine-toast':'sardine tomato toast',
+  'curry-chickpeas':'chickpea spinach curry',
+  'easy-rotisserie-wrap':'rotisserie chicken wrap',
+  'easy-tuna-rice':'tuna rice bowl',
+  'easy-cottage-toast':'cottage cheese toast tomatoes',
+  'easy-chicken-salad-kit':'chicken salad bowl avocado'
 };
 const EASY_MEALS = [
-  {id:'easy-rotisserie-wrap',cat:'Easy',name:'Rotisserie chicken wrap',kcal:520,time:'5 min',ingredients:[i('rotisserie chicken',5,'oz'),i('whole wheat tortilla',1,'piece'),i('mixed greens',1,'cup'),i('hummus',2,'tbsp')],recipe:['Add chicken, greens, and hummus to tortilla.','Roll tightly and slice.']},
-  {id:'easy-tuna-rice',cat:'Easy',name:'Tuna microwave rice bowl',kcal:560,time:'4 min',ingredients:[i('microwave rice',1,'pack'),i('canned tuna',1,'can'),i('salsa',3,'tbsp'),i('mixed greens',1,'cup')],recipe:['Heat rice.','Top with tuna, salsa, and greens.']},
-  {id:'easy-cottage-toast',cat:'Easy',name:'Cottage cheese toast',kcal:390,time:'4 min',ingredients:[i('whole grain bread',2,'slice'),i('cottage cheese',0.75,'cup'),i('tomatoes',0.5,'cup'),i('black pepper',0.25,'tsp')],recipe:['Toast bread.','Top with cottage cheese, tomatoes, and pepper.']},
-  {id:'easy-chicken-salad-kit',cat:'Easy',name:'Chicken salad kit',kcal:610,time:'5 min',ingredients:[i('salad kit',1,'bag'),i('cooked chicken breast',6,'oz'),i('avocado',0.5,'piece')],recipe:['Mix salad kit.','Top with chicken and avocado.']}
+  {id:'easy-rotisserie-wrap',cat:'Lunch',name:'Rotisserie chicken wrap',kcal:520,time:'5 min',difficulty:'Easy',ingredients:[i('rotisserie chicken',5,'oz'),i('whole wheat tortilla',1,'piece'),i('mixed greens',1,'cup'),i('hummus',2,'tbsp')],recipe:['Spread hummus edge to edge on the tortilla so every bite has moisture.','Add chicken in a line through the center, then add greens.','Fold the sides in first, roll tightly from the bottom, and slice in half.']},
+  {id:'easy-tuna-rice',cat:'Lunch',name:'Tuna microwave rice bowl',kcal:560,time:'4 min',difficulty:'Easy',ingredients:[i('microwave rice',1,'pack'),i('canned tuna',1,'can'),i('salsa',3,'tbsp'),i('mixed greens',1,'cup')],recipe:['Heat rice according to the package and fluff it into a bowl.','Drain tuna well, break it into chunks, and spoon it over the rice.','Add salsa and greens, then stir lightly so the greens wilt without disappearing.']},
+  {id:'easy-cottage-toast',cat:'Breakfast',name:'Cottage cheese toast',kcal:390,time:'4 min',difficulty:'Easy',ingredients:[i('whole grain bread',2,'slice'),i('cottage cheese',0.75,'cup'),i('tomatoes',0.5,'cup'),i('black pepper',0.25,'tsp')],recipe:['Toast bread until crisp enough to hold the toppings.','Spoon cottage cheese onto each slice and spread it to the edges.','Add tomatoes, black pepper, and a pinch of salt if needed.']},
+  {id:'easy-chicken-salad-kit',cat:'Lunch',name:'Chicken salad kit',kcal:610,time:'5 min',difficulty:'Easy',ingredients:[i('salad kit',1,'bag'),i('cooked chicken breast',6,'oz'),i('avocado',0.5,'piece')],recipe:['Open the salad kit and toss the greens with half the dressing first.','Slice chicken and avocado into bite-size pieces.','Top the salad with chicken, avocado, remaining toppings, and more dressing only if needed.']}
 ];
-function allMeals(){ return [...EASY_MEALS,...MEAL_LIBRARY,...getCustomMeals()].sort((a,b)=>CATEGORY_ORDER.indexOf(a.cat)-CATEGORY_ORDER.indexOf(b.cat)||a.name.localeCompare(b.name)); }
+function mealCategory(m){ return MEAL_CATEGORY_OVERRIDES[m.id] || (CATEGORY_ORDER.includes(m.cat)?m.cat:'Snack'); }
+function mealDifficulty(m){
+  if(m.difficulty) return m.difficulty;
+  const mins=parseInt(m.time,10)||0, steps=(m.recipe||[]).length;
+  if(mins<=10 && steps<=3) return 'Easy';
+  if(mins<=30 && steps<=5) return 'Medium';
+  return 'Hard';
+}
+function normalizedMeal(m){ return {...m, cat:mealCategory(m), difficulty:mealDifficulty(m)}; }
+function allMeals(){ return [...EASY_MEALS,...MEAL_LIBRARY,...getCustomMeals()].map(normalizedMeal).sort((a,b)=>CATEGORY_ORDER.indexOf(a.cat)-CATEGORY_ORDER.indexOf(b.cat)||a.name.localeCompare(b.name)); }
 function mealById(id){ return allMeals().find(m=>m.id===id); }
 function mealFilters(){ return ['All',...CATEGORY_ORDER.filter(c=>allMeals().some(m=>m.cat===c))]; }
-function mealImage(m){ return m.image || MEAL_IMAGES[m.cat] || MEAL_IMAGES.Custom; }
+function mealImage(m){ const q=encodeURIComponent(m.imageQuery || IMAGE_QUERIES[m.id] || m.name); return m.image || 'https://source.unsplash.com/160x160/?'+q+',food'; }
+function recipeSteps(m) {
+  if(m.detailedRecipe) return m.detailedRecipe;
+  const ingredients=m.ingredients.slice(0,5).map(x=>x.item).join(', ');
+  const base=(m.recipe||[]).map(s=>s.trim()).filter(Boolean);
+  return [
+    'Set out and measure the main ingredients: '+ingredients+'.',
+    ...base.map((s,i)=> i===0 ? s+' Start with medium heat or gentle mixing so the meal stays controlled.' : s),
+    'Taste, adjust seasoning, and plate it while the hot items are still warm and the fresh items still have texture.'
+  ];
+}
 function setMealFilter(cat){ selectedMealFilter=cat; renderMealPlanner(); }
 function addMealToCart(id, delta=1) { const cart=getMealCart(); cart[id]=Math.max(0,(cart[id]||0)+delta); if(!cart[id]) delete cart[id]; setMealCart(cart); renderMealPlanner(); }
 function removeMealFromCart(id){ const cart=getMealCart(); delete cart[id]; setMealCart(cart); renderMealPlanner(); }
 function clearMealCart(){ setMealCart({}); setGroceryChecked([]); document.getElementById('groceryWrap').classList.remove('show'); renderMealPlanner(); }
 function toggleMealDetails(id){ expandedMealId = expandedMealId===id ? null : id; renderMealLibrary(); }
 function renderMealPlanner(){ renderMealFilters(); renderMealCart(); renderMealLibrary(); if(document.getElementById('groceryWrap')?.classList.contains('show')) renderGroceryList(false); }
-function renderMealFilters(){ const el=document.getElementById('mealFilters'); if(!el) return; el.innerHTML=mealFilters().map(cat=>'<button class="meal-filter-btn'+(cat===selectedMealFilter?' sel':'')+'" onclick="setMealFilter(\''+cat+'\')">'+cat+'</button>').join(''); }
+function renderMealFilters(){ const el=document.getElementById('mealFilters'); if(!el) return; el.innerHTML=mealFilters().map(cat=>'<button class="meal-filter-btn'+(cat===selectedMealFilter?' sel':'')+'" onclick="setMealFilter(\''+cat+'\')">'+(CATEGORY_LABEL[cat]||cat)+'</button>').join(''); }
 function renderMealCart(){
   const cart=getMealCart(), ids=Object.keys(cart), summary=document.getElementById('mealCartSummary'), items=document.getElementById('mealCartItems'); if(!summary || !items) return;
   const total=ids.reduce((sum,id)=>sum+(mealById(id)?.kcal||0)*(cart[id]||0),0), count=ids.reduce((sum,id)=>sum+(cart[id]||0),0);
@@ -1340,15 +1401,16 @@ function renderMealCart(){
 }
 function renderMealLibrary(){
   const el=document.getElementById('mealLibrary'); if(!el) return; const cart=getMealCart(), q=(document.getElementById('mealSearch')?.value||'').trim().toLowerCase();
-  const meals=allMeals().filter(m=>(selectedMealFilter==='All'||m.cat===selectedMealFilter) && (!q || (m.name+' '+m.cat+' '+m.ingredients.map(x=>x.item).join(' ')).toLowerCase().includes(q)));
+  const meals=allMeals().filter(m=>(selectedMealFilter==='All'||m.cat===selectedMealFilter) && (!q || (m.name+' '+m.cat+' '+m.difficulty+' '+m.ingredients.map(x=>x.item).join(' ')).toLowerCase().includes(q)));
   const groups=meals.reduce((acc,m)=>{ (acc[m.cat] ||= []).push(m); return acc; },{}); const cats=(selectedMealFilter==='All'?CATEGORY_ORDER:[selectedMealFilter]).filter(c=>groups[c]?.length);
-  el.innerHTML=cats.map(cat=>'<div class="meal-lib-cat">'+cat+'</div>'+groups[cat].map(m=>renderMealCard(m, cart)).join('')).join('') || '<div class="empty">No matching meals.</div>';
+  el.innerHTML=cats.map(cat=>'<div class="meal-lib-cat">'+CATEGORY_LABEL[cat]+'</div>'+groups[cat].map(m=>renderMealCard(m, cart)).join('')).join('') || '<div class="empty">No matching meals.</div>';
 }
 function renderMealCard(m, cart){
   const expanded=expandedMealId===m.id, qty=cart[m.id]||0;
-  const body=expanded?'<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">'+m.ingredients.map(x=>'<div class="meal-ing-row"><span class="meal-ing-name">'+esc(x.item)+'</span><span class="meal-ing-amt">'+fmtAmt(x.amount)+' '+esc(x.unit)+'</span></div>').join('')+'</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">'+m.recipe.map(step=>'<li>'+esc(step)+'</li>').join('')+'</ol></div>':'';
+  const diff=(m.difficulty||mealDifficulty(m)).toLowerCase();
+  const body=expanded?'<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">'+m.ingredients.map(x=>'<div class="meal-ing-row"><span class="meal-ing-name">'+esc(x.item)+'</span><span class="meal-ing-amt">'+fmtAmt(x.amount)+' '+esc(x.unit)+'</span></div>').join('')+'</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">'+recipeSteps(m).map(step=>'<li>'+esc(step)+'</li>').join('')+'</ol></div>':'';
   const controls=qty?'<span class="cart-stepper"><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',-1)">-</button><span>'+qty+'</span><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">+</button></span>':'<button class="meal-add-btn" onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">Add</button>';
-  return '<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt=""><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</div></div>'+controls+'</div>'+body+'</div>';
+  return '<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt="'+esc(m.name)+'"><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-meta-row"><span class="difficulty-badge '+diff+'">'+esc(m.difficulty||mealDifficulty(m))+'</span><span class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</span></div></div>'+controls+'</div>'+body+'</div>';
 }
 function fmtAmt(n){ return Number.isInteger(n)?String(n):String(Math.round(n*100)/100); }
 function groceryRows(){ const cart=getMealCart(), grouped={}; Object.keys(cart).forEach(id=>{ const meal=mealById(id); if(!meal) return; meal.ingredients.forEach(x=>{ const key=(x.item+'|'+x.unit).toLowerCase(); if(!grouped[key]) grouped[key]={item:x.item,unit:x.unit,amount:0}; grouped[key].amount += x.amount * cart[id]; }); }); return Object.values(grouped).sort((a,b)=>a.item.localeCompare(b.item)); }
@@ -1357,7 +1419,7 @@ function toggleGroceryItem(key, checked){ const set=new Set(getGroceryChecked())
 function groceryText(){ return groceryRows().map(x=>fmtAmt(x.amount)+' '+x.unit+' '+x.item).join('\n'); }
 async function copyGroceryList(){ const text=groceryText(); if(!text){ showToast('Select meals first'); return; } try { await navigator.clipboard.writeText(text); showToast('Grocery list copied'); } catch { showToast(text); } }
 function toggleCustomMealForm(show){ document.getElementById('customMealForm').classList.toggle('show', show); }
-function saveCustomMeal(){ const name=document.getElementById('customMealName').value.trim(); if(!name){ showToast('Add a meal name'); return; } const ingredients=document.getElementById('customMealIngredients').value.split('\n').map(parseIngredient).filter(Boolean); const recipe=document.getElementById('customMealRecipe').value.split('\n').map(x=>x.trim()).filter(Boolean); const meal={id:'custom-'+Date.now(),cat:'Custom',name,kcal:parseInt(document.getElementById('customMealKcal').value,10)||0,time:document.getElementById('customMealTime').value.trim()||'manual',ingredients:ingredients.length?ingredients:[i('custom ingredients',1,'item')],recipe:recipe.length?recipe:['Prepare as preferred.']}; setCustomMeals([...getCustomMeals(), meal]); ['customMealName','customMealKcal','customMealTime','customMealIngredients','customMealRecipe'].forEach(id=>document.getElementById(id).value=''); toggleCustomMealForm(false); renderMealPlanner(); showToast('Meal saved'); }
+function saveCustomMeal(){ const name=document.getElementById('customMealName').value.trim(); if(!name){ showToast('Add a meal name'); return; } const ingredients=document.getElementById('customMealIngredients').value.split('\n').map(parseIngredient).filter(Boolean); const recipe=document.getElementById('customMealRecipe').value.split('\n').map(x=>x.trim()).filter(Boolean); const meal={id:'custom-'+Date.now(),cat:'Snack',name,kcal:parseInt(document.getElementById('customMealKcal').value,10)||0,time:document.getElementById('customMealTime').value.trim()||'manual',ingredients:ingredients.length?ingredients:[i('custom ingredients',1,'item')],recipe:recipe.length?recipe:['Prepare ingredients and set up your cooking area.','Cook or assemble the meal as preferred.','Taste, adjust seasoning, and serve.']}; setCustomMeals([...getCustomMeals(), meal]); ['customMealName','customMealKcal','customMealTime','customMealIngredients','customMealRecipe'].forEach(id=>document.getElementById(id).value=''); toggleCustomMealForm(false); renderMealPlanner(); showToast('Meal saved'); }
 function parseIngredient(line){ const t=line.trim(); if(!t) return null; const m=t.match(/^(\d+(?:\.\d+)?)\s+([a-zA-Z]+)\s+(.+)$/); if(m) return i(m[3], parseFloat(m[1]), m[2]); return i(t, 1, 'item'); }
 function setupSwipeDeletes(){ document.querySelectorAll('[data-swipe]').forEach(w=>{ if(w.dataset.ready) return; w.dataset.ready='1'; let sx=0, dx=0; w.addEventListener('pointerdown',e=>{ sx=e.clientX; dx=0; }); w.addEventListener('pointermove',e=>{ dx=e.clientX-sx; if(dx<-30) w.classList.add('open'); if(dx>30) w.classList.remove('open'); }); }); }
 
@@ -1590,13 +1652,22 @@ function setMarker(id, pct, color) {
   el.style.left = Math.min(100,Math.max(0,pct))+'%';
   el.style.borderColor = color;
 }
-function calorieTarget(currentWeight, avgDistance) {
+function caloriePlan(currentWeight, avgDistance) {
   const remainingLoss=Math.max(0,currentWeight-165);
   const weeksLeft=Math.max(1,TOTAL_WEEKS-weekNum()+1);
-  const dailyDeficit=Math.min(700, Math.max(250, (remainingLoss/weeksLeft)*500));
-  const activityCredit=Math.min(6, Math.max(0, avgDistance||0))*45;
-  const estimatedMaintenance=2400+activityCredit;
-  return Math.round(Math.max(1700, Math.min(2600, estimatedMaintenance-dailyDeficit))/25)*25;
+  const weeklyLoss=remainingLoss/weeksLeft;
+  const dailyDeficit=Math.min(650, Math.max(250, weeklyLoss*500));
+  const distance=Math.min(6, Math.max(0, avgDistance||0));
+  const estimatedMaintenance=(currentWeight||175)*13 + distance*30;
+  const target=Math.round(Math.max(1700, Math.min(2300, estimatedMaintenance-dailyDeficit))/25)*25;
+  return {target, maintenance:Math.round(estimatedMaintenance/25)*25, deficit:Math.round(dailyDeficit/25)*25, weeklyLoss};
+}
+function calorieTarget(currentWeight, avgDistance) {
+  return caloriePlan(currentWeight, avgDistance).target;
+}
+function avgLoggedCalories(log) {
+  const calEntries=log.slice(0,7).map(e=>(e.meals||[]).filter(m=>!m.skipped).reduce((s,m)=>s+(m.kcal||0),0)).filter(Boolean);
+  return {avg:calEntries.length?calEntries.reduce((a,b)=>a+b,0)/calEntries.length:0, days:calEntries.length};
 }
 
 /* ══ Render (stats + goal bars) ══ */
@@ -1629,24 +1700,32 @@ function render() {
   const rd=log.slice(0,7).map(e=>e.dist||0), ad=rd.length?rd.reduce((a,b)=>a+b)/rd.length:3.5;
   document.getElementById('g-dist-cur').textContent=ad.toFixed(1);
   document.getElementById('g-dist-cur').className='goal-cur '+(ad>=6?'cg':ad>=4?'ca':'cr');
+  document.getElementById('g-dist-target').textContent='target - 6.0 km/day';
+  document.getElementById('gs-dist').textContent=rd.length?(ad>=6?'On target':(6-ad).toFixed(1)+' km/day below target'):'Log distance to track the 7-day average';
   setMarker('dist', (ad/8)*100, ad>=6?'#639922':ad>=4?'#d4873a':'#ef5350');
 
   const rs=log.slice(0,7).filter(e=>e.sleep>0).map(e=>e.sleep), as2=rs.length?rs.reduce((a,b)=>a+b)/rs.length:6.5;
   document.getElementById('g-sleep-cur').textContent=as2.toFixed(1);
   document.getElementById('g-sleep-cur').className='goal-cur '+(as2>=7.5?'cg':as2>=7?'ca':'cr');
-  document.getElementById('gs-sleep').textContent=as2>=7.5?'On target - keep it up':'Earlier bedtime = better HRV & recovery';
+  document.getElementById('g-sleep-target').textContent='target - 7.5 hrs/night';
+  document.getElementById('gs-sleep').textContent=rs.length?(as2>=7.5?'On target':(7.5-as2).toFixed(1)+' hrs/night below target'):'Log sleep to track the 7-day average';
   setMarker('sleep', ((as2-4.5)/5)*100, as2>=7.5?'#639922':as2>=7?'#d4873a':'#ef5350');
 
-  const calEntries=log.slice(0,7).map(e=>(e.meals||[]).filter(m=>!m.skipped).reduce((s,m)=>s+(m.kcal||0),0)).filter(Boolean);
-  const avgCal=calEntries.length?calEntries.reduce((a,b)=>a+b,0)/calEntries.length:0;
+  const calStats=avgLoggedCalories(log), avgCal=calStats.avg;
   const calEl=document.getElementById('g-cal-cur');
   if(calEl){
-    const targetCal=calorieTarget(lw, ad);
+    const plan=caloriePlan(lw, ad), targetCal=plan.target;
     calEl.textContent=avgCal?Math.round(avgCal).toLocaleString():'0';
-    calEl.className='goal-cur '+(avgCal&&avgCal<=targetCal?'cg':avgCal<=targetCal+300?'ca':'cr');
+    calEl.className='goal-cur '+(avgCal&&avgCal<=targetCal+100?'cg':avgCal<=targetCal+300?'ca':'cr');
     document.getElementById('g-cal-target').textContent='target - ~'+targetCal.toLocaleString()+' kcal/day';
-    document.getElementById('gs-cal').textContent=avgCal?'Based on 165 lb goal, current weight, and distance average':'Log meals to track calories';
-    setMarker('cal', (avgCal/3200)*100, avgCal&&avgCal<=targetCal?'#639922':avgCal<=targetCal+300?'#d4873a':'#ef5350');
+    document.getElementById('gs-cal').textContent=avgCal
+      ? 'Logged '+calStats.days+' day avg: '+Math.round(avgCal).toLocaleString()+' kcal/day | goal target: '+targetCal.toLocaleString()+' | '+(avgCal<=targetCal+100?'on target':Math.round(avgCal-targetCal).toLocaleString()+' over target')
+      : 'Log meals to compare your 7-day average against the target';
+    const calMin=Math.max(1200,targetCal-700), calMax=targetCal+700;
+    document.getElementById('calZoneLabels').innerHTML='<span>'+calMin.toLocaleString()+'</span><span>'+targetCal.toLocaleString()+' target</span><span>'+calMax.toLocaleString()+'</span>';
+    document.querySelector('#zm-cal + .zone-target-line').style.left=((targetCal-calMin)/(calMax-calMin)*100)+'%';
+    const calPct=avgCal?((avgCal-calMin)/(calMax-calMin)*100):0;
+    setMarker('cal', calPct, avgCal&&avgCal<=targetCal+100?'#639922':avgCal<=targetCal+300?'#d4873a':'#ef5350');
   }
   setGoalsView(selectedGoalsView);
   renderLog(log);
