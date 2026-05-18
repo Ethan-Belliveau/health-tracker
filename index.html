@@ -256,6 +256,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .meal-lib-cat { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 14px 0 6px; }
 .meal-lib-cat:first-child { margin-top: 0; }
 .meal-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; margin-bottom: 6px; overflow: hidden; }
+.swipe-wrap .meal-card { margin-bottom: 0; }
 .meal-card-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; -webkit-user-select: none; user-select: none; }
 .meal-thumb { width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; object-fit: cover; background: var(--bg); }
 .meal-card-info { flex: 1; min-width: 0; }
@@ -295,10 +296,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Ar
 .meal-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
 .meal-toolbar .meal-search { margin-bottom: 0; }
 .manual-meal-btn { padding: 10px 12px; border: 0.5px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--blue-mid); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-.swipe-wrap { position: relative; overflow: hidden; border-radius: 10px; }
+.swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 6px; }
 .swipe-content { position: relative; z-index: 1; background: var(--surface); transition: transform 0.18s ease; touch-action: pan-y; }
 .swipe-wrap.open .swipe-content { transform: translateX(-72px); }
-.swipe-delete { position: absolute; top: 0; right: 0; bottom: 0; width: 72px; border: none; background: var(--red); color: #fff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.swipe-delete { position: absolute; inset: 0 0 0 auto; width: 72px; border: none; border-radius: 0 12px 12px 0; background: var(--red); color: #fff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .goal-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 12px; }
 .goal-tab { padding: 10px; border: 0.5px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .goal-tab.sel { background: var(--text); color: #fff; border-color: var(--text); }
@@ -1304,7 +1305,7 @@ const MEAL_LIBRARY = [
   {id:'apple-peanut-butter',cat:'Snack',name:'Apple peanut butter',kcal:280,time:'3 min',ingredients:[i('apple',1,'piece'),i('peanut butter',2,'tbsp')],recipe:['Slice apple.','Serve with peanut butter for dipping.']},
   {id:'hummus-veg',cat:'Snack',name:'Hummus veggie plate',kcal:260,time:'5 min',ingredients:[i('hummus',0.33,'cup'),i('carrots',1,'cup'),i('cucumber',1,'cup'),i('bell peppers',1,'cup')],recipe:['Slice vegetables.','Serve with hummus.']},
   {id:'egg-snack-box',cat:'Snack',name:'Boiled egg snack box',kcal:310,time:'12 min',ingredients:[i('eggs',2,'piece'),i('grapes',1,'cup'),i('almonds',1,'oz'),i('carrots',0.5,'cup')],recipe:['Boil eggs and cool.','Pack with grapes, almonds, and carrots.']},
-  {id:'beef-jerky-orange',cat:'Snack',name:'Beef jerky orange pack',kcal:230,time:'2 min',difficulty:'Easy',ingredients:[i('beef jerky',1.5,'oz'),i('orange',1,'piece'),i('pumpkin seeds',1,'tbsp')],recipe:['Portion jerky into a small bowl or container.','Peel or slice the orange.','Add pumpkin seeds on the side for crunch and minerals.']},
+  {id:'roasted-chickpeas',cat:'Snack',name:'Crispy roasted chickpeas',kcal:240,time:'20 min',difficulty:'Medium',ingredients:[i('chickpeas',0.75,'cup'),i('olive oil',1,'tsp'),i('smoked paprika',0.5,'tsp'),i('sea salt',0.25,'tsp')],recipe:['Pat chickpeas dry so they crisp instead of steam.','Toss with olive oil, smoked paprika, and salt.','Roast or air fry until crisp, shaking once halfway through.']},
   {id:'protein-pudding',cat:'Snack',name:'Protein pudding cup',kcal:290,time:'5 min',difficulty:'Easy',ingredients:[i('Greek yogurt',0.75,'cup'),i('protein powder',0.5,'scoop'),i('cocoa powder',1,'tbsp'),i('berries',0.5,'cup')],recipe:['Stir yogurt, protein powder, and cocoa until smooth.','Let it sit for two minutes so the powder hydrates.','Top with berries and eat cold.']},
   {id:'turkey-cheese-rollups',cat:'Snack',name:'Turkey cheese rollups',kcal:260,time:'4 min',difficulty:'Easy',ingredients:[i('turkey slices',4,'slice'),i('cheddar',1,'oz'),i('pickle spear',1,'piece'),i('mustard',1,'tsp')],recipe:['Lay turkey slices flat and spread a little mustard on each.','Add thin cheddar strips and pickle.','Roll tightly and slice into bite-size pieces.']},
   {id:'edamame-cup',cat:'Snack',name:'Sea salt edamame',kcal:190,time:'6 min',difficulty:'Easy',ingredients:[i('shelled edamame',1,'cup'),i('sea salt',0.25,'tsp'),i('lemon juice',1,'tsp')],recipe:['Microwave or steam edamame until hot.','Sprinkle with sea salt and lemon juice.','Toss and serve warm.']},
@@ -1390,7 +1391,7 @@ const MEAL_IMAGE_URLS = {
   'apple-peanut-butter':'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=160&h=160&q=75',
   'hummus-veg':'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=160&h=160&q=75',
   'egg-snack-box':'https://images.unsplash.com/photo-1587486913049-53fc88980cfc?auto=format&fit=crop&w=160&h=160&q=75',
-  'beef-jerky-orange':'https://images.unsplash.com/photo-1603664454146-50b9bb1e7afa?auto=format&fit=crop&w=160&h=160&q=75',
+  'roasted-chickpeas':'https://images.unsplash.com/photo-1612257999126-73f7a84d1f41?auto=format&fit=crop&w=160&h=160&q=75',
   'protein-pudding':'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=160&h=160&q=75',
   'turkey-cheese-rollups':'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=160&h=160&q=75',
   'edamame-cup':'https://images.unsplash.com/photo-1615361200141-f45040f367be?auto=format&fit=crop&w=160&h=160&q=75',
@@ -1433,7 +1434,31 @@ function allMeals(){
 }
 function mealById(id){ return allMeals().find(m=>m.id===id); }
 function mealFilters(){ return ['All',...CATEGORY_ORDER.filter(c=>allMeals().some(m=>m.cat===c))]; }
-function mealImage(m){ return m.image || MEAL_IMAGE_URLS[m.id] || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=160&h=160&q=75'; }
+function mealVisualType(m) {
+  const name=(m.name+' '+m.id).toLowerCase();
+  if(/smoothie|drink/.test(name)) return 'smoothie';
+  if(/soup|chili|curry|oats|yogurt|cottage|pudding|edamame|chickpea/.test(name)) return 'bowl';
+  if(/toast|rice cake/.test(name)) return 'toast';
+  if(/wrap|pita|taco|rollup/.test(name)) return 'wrap';
+  if(/apple|hummus|snack box|banana|berries/.test(name)) return 'snack';
+  return 'plate';
+}
+function mealImage(m){
+  if(m.image) return m.image;
+  const type=mealVisualType(m), bg={Breakfast:'#f7ead4',Lunch:'#e7f1df',Dinner:'#e7edf5',Snack:'#f4e8f0'}[m.cat]||'#efece5';
+  const accent={Breakfast:'#d4873a',Lunch:'#639922',Dinner:'#378ADD',Snack:'#8b6f9c'}[m.cat]||'#8f897d';
+  const title=esc(m.name.split(' ').slice(0,2).join(' '));
+  const shapes={
+    bowl:`<ellipse cx="80" cy="94" rx="46" ry="18" fill="#fff"/><path d="M38 82h84c-4 28-20 42-42 42S42 110 38 82z" fill="${accent}"/><ellipse cx="80" cy="82" rx="42" ry="14" fill="#f9fbf5"/><circle cx="62" cy="78" r="8" fill="#efc35a"/><circle cx="82" cy="76" r="7" fill="#7fb069"/><circle cx="101" cy="80" r="6" fill="#d66a4a"/>`,
+    wrap:`<rect x="48" y="38" width="64" height="92" rx="28" fill="#f4d49b" transform="rotate(-12 80 84)"/><path d="M58 66c16-10 32-10 48 0v42c-16 9-32 9-48 0z" fill="${accent}" opacity=".9"/><circle cx="71" cy="82" r="6" fill="#7fb069"/><circle cx="92" cy="92" r="6" fill="#d66a4a"/>`,
+    toast:`<path d="M48 68c0-24 13-40 32-40s32 16 32 40v48H48z" fill="#c58b4b"/><path d="M56 72c0-19 10-32 24-32s24 13 24 32v36H56z" fill="#f1c579"/><circle cx="80" cy="78" r="16" fill="#f7f0cb"/><circle cx="80" cy="78" r="7" fill="#efc35a"/><path d="M58 100h44" stroke="${accent}" stroke-width="8" stroke-linecap="round"/>`,
+    smoothie:`<path d="M54 42h52l-8 88H62z" fill="#fff"/><path d="M60 58h40l-6 66H66z" fill="${accent}"/><path d="M68 36h28" stroke="#8f897d" stroke-width="6" stroke-linecap="round"/><path d="M88 34l18-20" stroke="#8f897d" stroke-width="5" stroke-linecap="round"/><circle cx="75" cy="76" r="5" fill="#fff" opacity=".5"/>`,
+    snack:`<rect x="36" y="48" width="88" height="70" rx="14" fill="#fff"/><circle cx="62" cy="78" r="14" fill="${accent}"/><circle cx="94" cy="76" r="12" fill="#efc35a"/><circle cx="82" cy="100" r="10" fill="#7fb069"/><path d="M46 118h68" stroke="#d6d1c8" stroke-width="5" stroke-linecap="round"/>`,
+    plate:`<circle cx="80" cy="84" r="50" fill="#fff"/><circle cx="80" cy="84" r="38" fill="#f8f6f0"/><path d="M50 92c22-26 40-26 60 0" fill="${accent}"/><circle cx="64" cy="72" r="9" fill="#7fb069"/><rect x="82" y="62" width="26" height="18" rx="5" fill="#d66a4a"/>`
+  };
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" rx="18" fill="${bg}"/>${shapes[type]||shapes.plate}<text x="80" y="148" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#3a372f">${title}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
 function recipeSteps(m) {
   if(m.detailedRecipe) return m.detailedRecipe;
   const ingredients=m.ingredients.slice(0,5).map(x=>x.item).join(', ');
@@ -1479,7 +1504,8 @@ function renderMealCard(m, cart){
   const diff=(m.difficulty||mealDifficulty(m)).toLowerCase();
   const body=expanded?'<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">'+m.ingredients.map(x=>'<div class="meal-ing-row"><span class="meal-ing-name">'+esc(x.item)+'</span><span class="meal-ing-amt">'+fmtAmt(x.amount)+' '+esc(x.unit)+'</span></div>').join('')+'</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">'+recipeSteps(m).map(step=>'<li>'+esc(step)+'</li>').join('')+'</ol></div>':'';
   const controls=qty?'<span class="cart-stepper"><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',-1)">-</button><span>'+qty+'</span><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">+</button></span>':'<button class="meal-add-btn" onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">Add</button>';
-  const card='<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt="'+esc(m.name)+'" onerror="this.src=\'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=160&h=160&q=75\'"><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-meta-row"><span class="difficulty-badge '+diff+'">'+esc(m.difficulty||mealDifficulty(m))+'</span><span class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</span></div></div>'+controls+'</div>'+body+'</div>';
+  const fallback=mealImage({...m,image:null,name:'Meal',cat:m.cat});
+  const card='<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt="'+esc(m.name)+'" onerror="this.onerror=null;this.src=\''+fallback+'\'"><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-meta-row"><span class="difficulty-badge '+diff+'">'+esc(m.difficulty||mealDifficulty(m))+'</span><span class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</span></div></div>'+controls+'</div>'+body+'</div>';
   return '<div class="swipe-wrap" data-swipe><button class="swipe-delete" onclick="deleteMealFromLibrary(\''+m.id+'\')">Delete</button><div class="swipe-content">'+card+'</div></div>';
 }
 function fmtAmt(n){ return Number.isInteger(n)?String(n):String(Math.round(n*100)/100); }
