@@ -28,6 +28,7 @@ export default async function handler(req, res) {
         metrics: state.metrics && typeof state.metrics === 'object' ? state.metrics : {},
         mealCart: state.mealCart && typeof state.mealCart === 'object' ? state.mealCart : {},
         customMeals: Array.isArray(state.customMeals) ? state.customMeals : [],
+        hiddenMeals: Array.isArray(state.hiddenMeals) ? state.hiddenMeals : [],
         groceryChecked: Array.isArray(state.groceryChecked) ? state.groceryChecked : [],
         dailyDraft: state.dailyDraft && typeof state.dailyDraft === 'object' ? state.dailyDraft : null,
         updatedAt: state.updatedAt || new Date().toISOString()

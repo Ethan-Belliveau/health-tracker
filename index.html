@@ -840,6 +840,7 @@ const NOTIF_KEY    = 'ethan_notif';
 const CART_KEY     = 'ethan_meal_cart';
 const GROCERY_KEY  = 'ethan_grocery_checked';
 const CUSTOM_MEALS_KEY = 'ethan_custom_meals';
+const HIDDEN_MEALS_KEY = 'ethan_hidden_meals';
 const BACKUP_KEY   = 'ethan_backup_meta';
 const DRAFT_KEY    = 'ethan_daily_log_draft';
 const START        = new Date(2026, 4, 17, 12); // Sunday, local time
@@ -894,6 +895,8 @@ function getMealCart() { try { return JSON.parse(localStorage.getItem(CART_KEY)|
 function setMealCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); markLocalChange(); }
 function getCustomMeals() { try { return JSON.parse(localStorage.getItem(CUSTOM_MEALS_KEY)||'[]'); } catch { return []; } }
 function setCustomMeals(v) { localStorage.setItem(CUSTOM_MEALS_KEY, JSON.stringify(v)); markLocalChange(); }
+function getHiddenMeals() { try { return JSON.parse(localStorage.getItem(HIDDEN_MEALS_KEY)||'[]'); } catch { return []; } }
+function setHiddenMeals(v) { localStorage.setItem(HIDDEN_MEALS_KEY, JSON.stringify(v)); markLocalChange(); }
 function getGroceryChecked() { try { return JSON.parse(localStorage.getItem(GROCERY_KEY)||'[]'); } catch { return []; } }
 function setGroceryChecked(v) { localStorage.setItem(GROCERY_KEY, JSON.stringify(v)); markLocalChange(); }
 function getDailyDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY)||'null'); } catch { return null; } }
@@ -901,7 +904,7 @@ function setDailyDraft(v) { v ? localStorage.setItem(DRAFT_KEY, JSON.stringify(v
 function backupMeta() { try { return JSON.parse(localStorage.getItem(BACKUP_KEY)||'{}'); } catch { return {}; } }
 function setBackupStatus(msg) { const el=document.getElementById('backupStatus'); if(el) el.textContent=msg; }
 function appState() {
-  return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), customMeals:getCustomMeals(), groceryChecked:getGroceryChecked(), dailyDraft:getDailyDraft(), updatedAt:backupMeta().updatedAt||null };
+  return { log:getLog(), plan:getPlan(), metrics:getMetrics(), mealCart:getMealCart(), customMeals:getCustomMeals(), hiddenMeals:getHiddenMeals(), groceryChecked:getGroceryChecked(), dailyDraft:getDailyDraft(), updatedAt:backupMeta().updatedAt||null };
 }
 function backupPayload() {
   return JSON.stringify({state:appState()});
@@ -913,6 +916,7 @@ function writeAppState(state) {
   if(state.metrics) localStorage.setItem(METRICS_KEY, JSON.stringify(state.metrics));
   if(state.mealCart) localStorage.setItem(CART_KEY, JSON.stringify(state.mealCart));
   if(Array.isArray(state.customMeals)) localStorage.setItem(CUSTOM_MEALS_KEY, JSON.stringify(state.customMeals));
+  if(Array.isArray(state.hiddenMeals)) localStorage.setItem(HIDDEN_MEALS_KEY, JSON.stringify(state.hiddenMeals));
   if(Array.isArray(state.groceryChecked)) localStorage.setItem(GROCERY_KEY, JSON.stringify(state.groceryChecked));
   if(state.dailyDraft) localStorage.setItem(DRAFT_KEY, JSON.stringify(state.dailyDraft)); else localStorage.removeItem(DRAFT_KEY);
   localStorage.setItem(BACKUP_KEY, JSON.stringify({updatedAt:state.updatedAt||new Date().toISOString(), syncedAt:state.updatedAt||null}));
@@ -920,7 +924,7 @@ function writeAppState(state) {
 }
 function hasLocalData() {
   const s=appState();
-  return s.log.length || Object.keys(s.plan.weekFocus||{}).length || Object.keys(s.plan.days||{}).length || Object.keys(s.metrics||{}).length || Object.keys(s.mealCart||{}).length || s.customMeals.length || !!s.dailyDraft;
+  return s.log.length || Object.keys(s.plan.weekFocus||{}).length || Object.keys(s.plan.days||{}).length || Object.keys(s.metrics||{}).length || Object.keys(s.mealCart||{}).length || s.customMeals.length || s.hiddenMeals.length || !!s.dailyDraft;
 }
 function markLocalChange() {
   if(restoringBackup) return;
@@ -1300,6 +1304,12 @@ const MEAL_LIBRARY = [
   {id:'apple-peanut-butter',cat:'Snack',name:'Apple peanut butter',kcal:280,time:'3 min',ingredients:[i('apple',1,'piece'),i('peanut butter',2,'tbsp')],recipe:['Slice apple.','Serve with peanut butter for dipping.']},
   {id:'hummus-veg',cat:'Snack',name:'Hummus veggie plate',kcal:260,time:'5 min',ingredients:[i('hummus',0.33,'cup'),i('carrots',1,'cup'),i('cucumber',1,'cup'),i('bell peppers',1,'cup')],recipe:['Slice vegetables.','Serve with hummus.']},
   {id:'egg-snack-box',cat:'Snack',name:'Boiled egg snack box',kcal:310,time:'12 min',ingredients:[i('eggs',2,'piece'),i('grapes',1,'cup'),i('almonds',1,'oz'),i('carrots',0.5,'cup')],recipe:['Boil eggs and cool.','Pack with grapes, almonds, and carrots.']},
+  {id:'beef-jerky-orange',cat:'Snack',name:'Beef jerky orange pack',kcal:230,time:'2 min',difficulty:'Easy',ingredients:[i('beef jerky',1.5,'oz'),i('orange',1,'piece'),i('pumpkin seeds',1,'tbsp')],recipe:['Portion jerky into a small bowl or container.','Peel or slice the orange.','Add pumpkin seeds on the side for crunch and minerals.']},
+  {id:'protein-pudding',cat:'Snack',name:'Protein pudding cup',kcal:290,time:'5 min',difficulty:'Easy',ingredients:[i('Greek yogurt',0.75,'cup'),i('protein powder',0.5,'scoop'),i('cocoa powder',1,'tbsp'),i('berries',0.5,'cup')],recipe:['Stir yogurt, protein powder, and cocoa until smooth.','Let it sit for two minutes so the powder hydrates.','Top with berries and eat cold.']},
+  {id:'turkey-cheese-rollups',cat:'Snack',name:'Turkey cheese rollups',kcal:260,time:'4 min',difficulty:'Easy',ingredients:[i('turkey slices',4,'slice'),i('cheddar',1,'oz'),i('pickle spear',1,'piece'),i('mustard',1,'tsp')],recipe:['Lay turkey slices flat and spread a little mustard on each.','Add thin cheddar strips and pickle.','Roll tightly and slice into bite-size pieces.']},
+  {id:'edamame-cup',cat:'Snack',name:'Sea salt edamame',kcal:190,time:'6 min',difficulty:'Easy',ingredients:[i('shelled edamame',1,'cup'),i('sea salt',0.25,'tsp'),i('lemon juice',1,'tsp')],recipe:['Microwave or steam edamame until hot.','Sprinkle with sea salt and lemon juice.','Toss and serve warm.']},
+  {id:'rice-cake-tuna',cat:'Snack',name:'Tuna rice cakes',kcal:300,time:'5 min',difficulty:'Easy',ingredients:[i('rice cakes',2,'piece'),i('canned tuna',0.5,'can'),i('Greek yogurt',1,'tbsp'),i('cucumber',0.25,'cup')],recipe:['Drain tuna and mix it with Greek yogurt.','Spoon tuna onto rice cakes right before eating.','Top with cucumber slices for crunch.']},
+  {id:'banana-protein-bites',cat:'Snack',name:'Banana protein bites',kcal:340,time:'8 min',difficulty:'Easy',ingredients:[i('banana',1,'piece'),i('peanut butter',1,'tbsp'),i('protein powder',0.5,'scoop'),i('rolled oats',0.25,'cup')],recipe:['Mash banana with peanut butter.','Stir in protein powder and oats until thick.','Roll into small bites or eat as a quick bowl.']},
   {id:'salmon-sheet-pan',cat:'Dinner',name:'Sheet-pan salmon dinners',kcal:640,time:'30 min',ingredients:[i('salmon fillet',6,'oz'),i('sweet potato',1,'piece'),i('broccoli',1.5,'cup'),i('olive oil',1,'tbsp'),i('lemon juice',1,'tbsp')],recipe:['Roast sweet potato first for 15 minutes.','Add salmon and broccoli to the pan.','Roast until salmon flakes easily.']},
   {id:'chicken-soup',cat:'Dinner',name:'Chicken rice soup',kcal:460,time:'45 min',ingredients:[i('chicken breast',6,'oz'),i('chicken broth',2,'cup'),i('brown rice',0.5,'cup'),i('carrots',0.5,'cup'),i('celery',0.5,'cup'),i('onion',0.5,'piece')],recipe:['Simmer chicken, broth, rice, and vegetables.','Shred chicken once cooked.','Season and serve.']},
   {id:'overnight-oats',cat:'Breakfast',name:'Overnight oats jar',kcal:440,time:'5 min',ingredients:[i('rolled oats',0.5,'cup'),i('Greek yogurt',0.5,'cup'),i('milk',0.5,'cup'),i('berries',0.5,'cup'),i('chia seeds',1,'tbsp')],recipe:['Mix oats, yogurt, milk, and chia in a jar.','Refrigerate overnight.','Top with berries.']},
@@ -1357,6 +1367,48 @@ const IMAGE_QUERIES = {
   'easy-cottage-toast':'cottage cheese toast tomatoes',
   'easy-chicken-salad-kit':'chicken salad bowl avocado'
 };
+const MEAL_IMAGE_URLS = {
+  'egg-avocado-toast':'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=160&h=160&q=75',
+  'greek-yogurt-bowl':'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=160&h=160&q=75',
+  'protein-oats':'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=160&h=160&q=75',
+  'cottage-cheese-plate':'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=160&h=160&q=75',
+  'turkey-breakfast-wrap':'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=160&h=160&q=75',
+  'chicken-rice-bowl':'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=160&h=160&q=75',
+  'tuna-white-bean-salad':'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=160&h=160&q=75',
+  'turkey-chili':'https://images.unsplash.com/photo-1528751014936-863e6e7a319c?auto=format&fit=crop&w=160&h=160&q=75',
+  'chickpea-wrap':'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=160&h=160&q=75',
+  'salmon-quinoa-salad':'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=160&h=160&q=75',
+  'steak-sweet-potato':'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=160&h=160&q=75',
+  'shrimp-tacos':'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=160&h=160&q=75',
+  'turkey-meatballs':'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=160&h=160&q=75',
+  'tofu-stir-fry':'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=160&h=160&q=75',
+  'chicken-fajita-bowl':'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=160&h=160&q=75',
+  'lentil-soup':'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=160&h=160&q=75',
+  'cod-potatoes':'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=160&h=160&q=75',
+  'beef-burrito-bowl':'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=160&h=160&q=75',
+  'smoothie':'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=160&h=160&q=75',
+  'apple-peanut-butter':'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=160&h=160&q=75',
+  'hummus-veg':'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=160&h=160&q=75',
+  'egg-snack-box':'https://images.unsplash.com/photo-1587486913049-53fc88980cfc?auto=format&fit=crop&w=160&h=160&q=75',
+  'beef-jerky-orange':'https://images.unsplash.com/photo-1603664454146-50b9bb1e7afa?auto=format&fit=crop&w=160&h=160&q=75',
+  'protein-pudding':'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=160&h=160&q=75',
+  'turkey-cheese-rollups':'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=160&h=160&q=75',
+  'edamame-cup':'https://images.unsplash.com/photo-1615361200141-f45040f367be?auto=format&fit=crop&w=160&h=160&q=75',
+  'rice-cake-tuna':'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=160&h=160&q=75',
+  'banana-protein-bites':'https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=160&h=160&q=75',
+  'salmon-sheet-pan':'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=160&h=160&q=75',
+  'chicken-soup':'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=160&h=160&q=75',
+  'overnight-oats':'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=160&h=160&q=75',
+  'med-chicken-pita':'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=160&h=160&q=75',
+  'pork-tenderloin':'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=160&h=160&q=75',
+  'black-bean-eggs':'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=160&h=160&q=75',
+  'sardine-toast':'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=160&h=160&q=75',
+  'curry-chickpeas':'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=160&h=160&q=75',
+  'easy-rotisserie-wrap':'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=160&h=160&q=75',
+  'easy-tuna-rice':'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=160&h=160&q=75',
+  'easy-cottage-toast':'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=160&h=160&q=75',
+  'easy-chicken-salad-kit':'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=160&h=160&q=75'
+};
 const EASY_MEALS = [
   {id:'easy-rotisserie-wrap',cat:'Lunch',name:'Rotisserie chicken wrap',kcal:520,time:'5 min',difficulty:'Easy',ingredients:[i('rotisserie chicken',5,'oz'),i('whole wheat tortilla',1,'piece'),i('mixed greens',1,'cup'),i('hummus',2,'tbsp')],recipe:['Spread hummus edge to edge on the tortilla so every bite has moisture.','Add chicken in a line through the center, then add greens.','Fold the sides in first, roll tightly from the bottom, and slice in half.']},
   {id:'easy-tuna-rice',cat:'Lunch',name:'Tuna microwave rice bowl',kcal:560,time:'4 min',difficulty:'Easy',ingredients:[i('microwave rice',1,'pack'),i('canned tuna',1,'can'),i('salsa',3,'tbsp'),i('mixed greens',1,'cup')],recipe:['Heat rice according to the package and fluff it into a bowl.','Drain tuna well, break it into chunks, and spoon it over the rice.','Add salsa and greens, then stir lightly so the greens wilt without disappearing.']},
@@ -1372,10 +1424,16 @@ function mealDifficulty(m){
   return 'Hard';
 }
 function normalizedMeal(m){ return {...m, cat:mealCategory(m), difficulty:mealDifficulty(m)}; }
-function allMeals(){ return [...EASY_MEALS,...MEAL_LIBRARY,...getCustomMeals()].map(normalizedMeal).sort((a,b)=>CATEGORY_ORDER.indexOf(a.cat)-CATEGORY_ORDER.indexOf(b.cat)||a.name.localeCompare(b.name)); }
+function allMeals(){
+  const hidden=new Set(getHiddenMeals()), rank={Easy:0,Medium:1,Hard:2};
+  return [...EASY_MEALS,...MEAL_LIBRARY,...getCustomMeals()]
+    .filter(m=>!hidden.has(m.id))
+    .map(normalizedMeal)
+    .sort((a,b)=>CATEGORY_ORDER.indexOf(a.cat)-CATEGORY_ORDER.indexOf(b.cat)||(rank[a.difficulty]-rank[b.difficulty])||a.name.localeCompare(b.name));
+}
 function mealById(id){ return allMeals().find(m=>m.id===id); }
 function mealFilters(){ return ['All',...CATEGORY_ORDER.filter(c=>allMeals().some(m=>m.cat===c))]; }
-function mealImage(m){ const q=encodeURIComponent(m.imageQuery || IMAGE_QUERIES[m.id] || m.name); return m.image || 'https://source.unsplash.com/160x160/?'+q+',food'; }
+function mealImage(m){ return m.image || MEAL_IMAGE_URLS[m.id] || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=160&h=160&q=75'; }
 function recipeSteps(m) {
   if(m.detailedRecipe) return m.detailedRecipe;
   const ingredients=m.ingredients.slice(0,5).map(x=>x.item).join(', ');
@@ -1391,8 +1449,18 @@ function addMealToCart(id, delta=1) { const cart=getMealCart(); cart[id]=Math.ma
 function removeMealFromCart(id){ const cart=getMealCart(); delete cart[id]; setMealCart(cart); renderMealPlanner(); }
 function clearMealCart(){ setMealCart({}); setGroceryChecked([]); document.getElementById('groceryWrap').classList.remove('show'); renderMealPlanner(); }
 function toggleMealDetails(id){ expandedMealId = expandedMealId===id ? null : id; renderMealLibrary(); }
+function deleteMealFromLibrary(id){
+  const custom=getCustomMeals();
+  if(custom.some(m=>m.id===id)) setCustomMeals(custom.filter(m=>m.id!==id));
+  else setHiddenMeals([...new Set([...getHiddenMeals(), id])]);
+  const cart=getMealCart();
+  if(cart[id]) { delete cart[id]; setMealCart(cart); }
+  if(expandedMealId===id) expandedMealId=null;
+  renderMealPlanner();
+  showToast('Meal deleted');
+}
 function renderMealPlanner(){ renderMealFilters(); renderMealCart(); renderMealLibrary(); if(document.getElementById('groceryWrap')?.classList.contains('show')) renderGroceryList(false); }
-function renderMealFilters(){ const el=document.getElementById('mealFilters'); if(!el) return; el.innerHTML=mealFilters().map(cat=>'<button class="meal-filter-btn'+(cat===selectedMealFilter?' sel':'')+'" onclick="setMealFilter(\''+cat+'\')">'+(CATEGORY_LABEL[cat]||cat)+'</button>').join(''); }
+function renderMealFilters(){ const el=document.getElementById('mealFilters'); if(!el) return; const filters=mealFilters(); if(!filters.includes(selectedMealFilter)) selectedMealFilter='All'; el.innerHTML=filters.map(cat=>'<button class="meal-filter-btn'+(cat===selectedMealFilter?' sel':'')+'" onclick="setMealFilter(\''+cat+'\')">'+(CATEGORY_LABEL[cat]||cat)+'</button>').join(''); }
 function renderMealCart(){
   const cart=getMealCart(), ids=Object.keys(cart), summary=document.getElementById('mealCartSummary'), items=document.getElementById('mealCartItems'); if(!summary || !items) return;
   const total=ids.reduce((sum,id)=>sum+(mealById(id)?.kcal||0)*(cart[id]||0),0), count=ids.reduce((sum,id)=>sum+(cart[id]||0),0);
@@ -1404,13 +1472,15 @@ function renderMealLibrary(){
   const meals=allMeals().filter(m=>(selectedMealFilter==='All'||m.cat===selectedMealFilter) && (!q || (m.name+' '+m.cat+' '+m.difficulty+' '+m.ingredients.map(x=>x.item).join(' ')).toLowerCase().includes(q)));
   const groups=meals.reduce((acc,m)=>{ (acc[m.cat] ||= []).push(m); return acc; },{}); const cats=(selectedMealFilter==='All'?CATEGORY_ORDER:[selectedMealFilter]).filter(c=>groups[c]?.length);
   el.innerHTML=cats.map(cat=>'<div class="meal-lib-cat">'+CATEGORY_LABEL[cat]+'</div>'+groups[cat].map(m=>renderMealCard(m, cart)).join('')).join('') || '<div class="empty">No matching meals.</div>';
+  setupSwipeDeletes();
 }
 function renderMealCard(m, cart){
   const expanded=expandedMealId===m.id, qty=cart[m.id]||0;
   const diff=(m.difficulty||mealDifficulty(m)).toLowerCase();
   const body=expanded?'<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">'+m.ingredients.map(x=>'<div class="meal-ing-row"><span class="meal-ing-name">'+esc(x.item)+'</span><span class="meal-ing-amt">'+fmtAmt(x.amount)+' '+esc(x.unit)+'</span></div>').join('')+'</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">'+recipeSteps(m).map(step=>'<li>'+esc(step)+'</li>').join('')+'</ol></div>':'';
   const controls=qty?'<span class="cart-stepper"><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',-1)">-</button><span>'+qty+'</span><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">+</button></span>':'<button class="meal-add-btn" onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">Add</button>';
-  return '<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt="'+esc(m.name)+'"><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-meta-row"><span class="difficulty-badge '+diff+'">'+esc(m.difficulty||mealDifficulty(m))+'</span><span class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</span></div></div>'+controls+'</div>'+body+'</div>';
+  const card='<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt="'+esc(m.name)+'" onerror="this.src=\'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=160&h=160&q=75\'"><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-meta-row"><span class="difficulty-badge '+diff+'">'+esc(m.difficulty||mealDifficulty(m))+'</span><span class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</span></div></div>'+controls+'</div>'+body+'</div>';
+  return '<div class="swipe-wrap" data-swipe><button class="swipe-delete" onclick="deleteMealFromLibrary(\''+m.id+'\')">Delete</button><div class="swipe-content">'+card+'</div></div>';
 }
 function fmtAmt(n){ return Number.isInteger(n)?String(n):String(Math.round(n*100)/100); }
 function groceryRows(){ const cart=getMealCart(), grouped={}; Object.keys(cart).forEach(id=>{ const meal=mealById(id); if(!meal) return; meal.ingredients.forEach(x=>{ const key=(x.item+'|'+x.unit).toLowerCase(); if(!grouped[key]) grouped[key]={item:x.item,unit:x.unit,amount:0}; grouped[key].amount += x.amount * cart[id]; }); }); return Object.values(grouped).sort((a,b)=>a.item.localeCompare(b.item)); }

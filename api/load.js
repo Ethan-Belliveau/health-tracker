@@ -32,6 +32,7 @@ export default async function handler(req, res) {
         metrics: {},
         mealCart: {},
         customMeals: [],
+        hiddenMeals: [],
         groceryChecked: [],
         dailyDraft: null,
         updatedAt: legacy.syncedAt || null
