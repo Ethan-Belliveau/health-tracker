@@ -1434,31 +1434,7 @@ function allMeals(){
 }
 function mealById(id){ return allMeals().find(m=>m.id===id); }
 function mealFilters(){ return ['All',...CATEGORY_ORDER.filter(c=>allMeals().some(m=>m.cat===c))]; }
-function mealVisualType(m) {
-  const name=(m.name+' '+m.id).toLowerCase();
-  if(/smoothie|drink/.test(name)) return 'smoothie';
-  if(/soup|chili|curry|oats|yogurt|cottage|pudding|edamame|chickpea/.test(name)) return 'bowl';
-  if(/toast|rice cake/.test(name)) return 'toast';
-  if(/wrap|pita|taco|rollup/.test(name)) return 'wrap';
-  if(/apple|hummus|snack box|banana|berries/.test(name)) return 'snack';
-  return 'plate';
-}
-function mealImage(m){
-  if(m.image) return m.image;
-  const type=mealVisualType(m), bg={Breakfast:'#f7ead4',Lunch:'#e7f1df',Dinner:'#e7edf5',Snack:'#f4e8f0'}[m.cat]||'#efece5';
-  const accent={Breakfast:'#d4873a',Lunch:'#639922',Dinner:'#378ADD',Snack:'#8b6f9c'}[m.cat]||'#8f897d';
-  const title=esc(m.name.split(' ').slice(0,2).join(' '));
-  const shapes={
-    bowl:`<ellipse cx="80" cy="94" rx="46" ry="18" fill="#fff"/><path d="M38 82h84c-4 28-20 42-42 42S42 110 38 82z" fill="${accent}"/><ellipse cx="80" cy="82" rx="42" ry="14" fill="#f9fbf5"/><circle cx="62" cy="78" r="8" fill="#efc35a"/><circle cx="82" cy="76" r="7" fill="#7fb069"/><circle cx="101" cy="80" r="6" fill="#d66a4a"/>`,
-    wrap:`<rect x="48" y="38" width="64" height="92" rx="28" fill="#f4d49b" transform="rotate(-12 80 84)"/><path d="M58 66c16-10 32-10 48 0v42c-16 9-32 9-48 0z" fill="${accent}" opacity=".9"/><circle cx="71" cy="82" r="6" fill="#7fb069"/><circle cx="92" cy="92" r="6" fill="#d66a4a"/>`,
-    toast:`<path d="M48 68c0-24 13-40 32-40s32 16 32 40v48H48z" fill="#c58b4b"/><path d="M56 72c0-19 10-32 24-32s24 13 24 32v36H56z" fill="#f1c579"/><circle cx="80" cy="78" r="16" fill="#f7f0cb"/><circle cx="80" cy="78" r="7" fill="#efc35a"/><path d="M58 100h44" stroke="${accent}" stroke-width="8" stroke-linecap="round"/>`,
-    smoothie:`<path d="M54 42h52l-8 88H62z" fill="#fff"/><path d="M60 58h40l-6 66H66z" fill="${accent}"/><path d="M68 36h28" stroke="#8f897d" stroke-width="6" stroke-linecap="round"/><path d="M88 34l18-20" stroke="#8f897d" stroke-width="5" stroke-linecap="round"/><circle cx="75" cy="76" r="5" fill="#fff" opacity=".5"/>`,
-    snack:`<rect x="36" y="48" width="88" height="70" rx="14" fill="#fff"/><circle cx="62" cy="78" r="14" fill="${accent}"/><circle cx="94" cy="76" r="12" fill="#efc35a"/><circle cx="82" cy="100" r="10" fill="#7fb069"/><path d="M46 118h68" stroke="#d6d1c8" stroke-width="5" stroke-linecap="round"/>`,
-    plate:`<circle cx="80" cy="84" r="50" fill="#fff"/><circle cx="80" cy="84" r="38" fill="#f8f6f0"/><path d="M50 92c22-26 40-26 60 0" fill="${accent}"/><circle cx="64" cy="72" r="9" fill="#7fb069"/><rect x="82" y="62" width="26" height="18" rx="5" fill="#d66a4a"/>`
-  };
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" rx="18" fill="${bg}"/>${shapes[type]||shapes.plate}<text x="80" y="148" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#3a372f">${title}</text></svg>`;
-  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
-}
+function mealImage(m){ return m.image || MEAL_IMAGE_URLS[m.id] || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=160&h=160&q=75'; }
 function recipeSteps(m) {
   if(m.detailedRecipe) return m.detailedRecipe;
   const ingredients=m.ingredients.slice(0,5).map(x=>x.item).join(', ');
@@ -1504,8 +1480,7 @@ function renderMealCard(m, cart){
   const diff=(m.difficulty||mealDifficulty(m)).toLowerCase();
   const body=expanded?'<div class="meal-card-body"><div class="meal-ing-label">Ingredients</div><div class="meal-ing-grid">'+m.ingredients.map(x=>'<div class="meal-ing-row"><span class="meal-ing-name">'+esc(x.item)+'</span><span class="meal-ing-amt">'+fmtAmt(x.amount)+' '+esc(x.unit)+'</span></div>').join('')+'</div><div class="meal-ing-label">Recipe</div><ol class="meal-recipe">'+recipeSteps(m).map(step=>'<li>'+esc(step)+'</li>').join('')+'</ol></div>':'';
   const controls=qty?'<span class="cart-stepper"><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',-1)">-</button><span>'+qty+'</span><button onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">+</button></span>':'<button class="meal-add-btn" onclick="event.stopPropagation();addMealToCart(\''+m.id+'\',1)">Add</button>';
-  const fallback=mealImage({...m,image:null,name:'Meal',cat:m.cat});
-  const card='<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt="'+esc(m.name)+'" onerror="this.onerror=null;this.src=\''+fallback+'\'"><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-meta-row"><span class="difficulty-badge '+diff+'">'+esc(m.difficulty||mealDifficulty(m))+'</span><span class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</span></div></div>'+controls+'</div>'+body+'</div>';
+  const card='<div class="meal-card"><div class="meal-card-hdr" onclick="toggleMealDetails(\''+m.id+'\')"><img class="meal-thumb" src="'+mealImage(m)+'" alt="'+esc(m.name)+'" onerror="this.onerror=null;this.src=\'https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=160&h=160&q=75\'"><div class="meal-card-info"><span class="meal-card-name">'+esc(m.name)+'</span><div class="meal-meta-row"><span class="difficulty-badge '+diff+'">'+esc(m.difficulty||mealDifficulty(m))+'</span><span class="meal-card-meta">~'+m.kcal+' kcal - '+m.time+' - '+m.ingredients.length+' ingredients</span></div></div>'+controls+'</div>'+body+'</div>';
   return '<div class="swipe-wrap" data-swipe><button class="swipe-delete" onclick="deleteMealFromLibrary(\''+m.id+'\')">Delete</button><div class="swipe-content">'+card+'</div></div>';
 }
 function fmtAmt(n){ return Number.isInteger(n)?String(n):String(Math.round(n*100)/100); }
